@@ -42,26 +42,30 @@ jobs:
     steps:
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@master
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
+          AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_S3_SECRET_REGION: ${{ secrets.AWS_S3_SECRET_REGION }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
-          envs: |
-            DB_USERNAME="${{ secrets.DB_USERNAME }}"
-            DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
-            AWS_S3_ACCESS_KEY="${{ secrets.AWS_S3_ACCESS_KEY }}"
-            AWS_S3_SECRET_ACCESS_KEY="${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}"
-            AWS_S3_BUCKET_NAME="${{ secrets.AWS_S3_BUCKET_NAME }}"
-            AWS_S3_SECRET_REGION="${{ secrets.AWS_S3_SECRET_REGION }}"
+          envs: DB_USERNAME,DB_PASSWORD,AWS_S3_ACCESS_KEY,AWS_S3_SECRET_ACCESS_KEY,AWS_S3_BUCKET_NAME,AWS_S3_SECRET_REGION
           script: |
             cd /home/ubuntu/app
             echo "Checking environment variables..."
             echo "Database username: $DB_USERNAME"
-            echo "Database URL: jdbc:mysql://localhost:3306/fitmon"
             sudo -E java -jar \
             -Dspring.datasource.url="jdbc:mysql://localhost:3306/fitmon" \
-            -Dspring.datasource.username=fitmon \
-            -Dspring.datasource.password="${{ secrets.DB_PASSWORD }}" \
+            -Dspring.datasource.username="$DB_USERNAME" \
+            -Dspring.datasource.password="$DB_PASSWORD" \
             -Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect \
+            -Dspring.cloud.aws.credentials.accessKey="$AWS_S3_ACCESS_KEY" \
+            -Dspring.cloud.aws.credentials.secretKey="$AWS_S3_SECRET_ACCESS_KEY" \
+            -Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
+            -Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
             cicd.jar > output.log 2>&1 &
