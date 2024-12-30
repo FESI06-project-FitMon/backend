@@ -49,6 +49,12 @@ jobs:
         script_stop: true
         script: |
           cd /home/ubuntu/app
+          export DB_USERNAME=${{ secrets.DB_USERNAME }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}
+          export AWS_S3_SECRET_ACCESS_KEY=${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+          export AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+          export AWS_S3_SECRET_REGION=${{ secrets.AWS_S3_SECRET_REGION }}
           echo "Current directory: $(pwd)"
           echo "Checking if jar exists:"
           ls -l cicd.jar
