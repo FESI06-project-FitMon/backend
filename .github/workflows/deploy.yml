@@ -6,51 +6,47 @@ on:
   pull_request:
     branches: [ "dev" ]
 
-permissions:
-  contents: read
-
 jobs:
   build:
+
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-    - uses: actions/checkout@v3
-
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@v2.6.0
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
+    - name: Build with Gradle Wrapper
+      run: ./gradlew clean build
+    - name: 빌드된 파일 이름 변경하기
+      run: mv ./build/libs/*SNAPSHOT.jar ./cicd.jar
+    - name: SCP로 EC2에 빌드된 파일 전송하기
+      uses: appleboy/scp-action@master
       with:
-        arguments: build
-
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: fitmon
-        path: build/libs/fitmon-0.0.1-SNAPSHOT.jar
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        source: cicd.jar
+        target: /home/ubuntu/app
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download build artifact
-      uses: actions/download-artifact@v2
+    - name: SSH로 EC2에 접속하기
+      uses: appleboy/ssh-action@master
       with:
-        name: fitmon
-        path: build/libs/
-
-    - name: Deploy to EC2
-      run: |
-        echo "${{ secrets.EC2_PRIVATE_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
-        scp -i private_key.pem -o StrictHostKeyChecking=no build/libs/fitmon-0.0.1-SNAPSHOT.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/fitmon.jar
-        ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "pgrep java | xargs kill -9; nohup java -jar /home/${{ secrets.EC2_USER }}/fitmon.jar > app.log 2>&1 &"
-        rm -f private_key.pem
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        script_stop: true
+        script: |
+          sudo fuser -k -n tcp 8080 || true
+          sudo nohup java -jar cicd.jar > ./output.log 2>&1 &
