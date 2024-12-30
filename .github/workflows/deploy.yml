@@ -1,71 +1,59 @@
-name: Deploy to EC2
+deploy:
+  needs: build
+  runs-on: ubuntu-latest
 
-on:
-  push:
-    branches: [ "dev" ]
-  pull_request:
-    branches: [ "dev" ]
-
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
-    - name: Build with Gradle Wrapper
-      run: ./gradlew clean build -x test
-    - name: 빌드된 파일 이름 변경하기
-      run: mv ./build/libs/*SNAPSHOT.jar ./cicd.jar
-    - name: SCP로 EC2에 빌드된 파일 전송하기
-      uses: appleboy/scp-action@master
+  steps:
+    - name: SSH로 EC2에 접속하기
+      uses: appleboy/ssh-action@master
+      env:
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
+        AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+        AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+        AWS_S3_SECRET_REGION: ${{ secrets.AWS_S3_SECRET_REGION }}
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
-        source: cicd.jar
-        target: /home/ubuntu/app
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: SSH로 EC2에 접속하기
-        uses: appleboy/ssh-action@master
-        env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
-          AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
-          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-          AWS_S3_SECRET_REGION: ${{ secrets.AWS_S3_SECRET_REGION }}
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          script_stop: true
-          envs: DB_USERNAME,DB_PASSWORD,AWS_S3_ACCESS_KEY,AWS_S3_SECRET_ACCESS_KEY,AWS_S3_BUCKET_NAME,AWS_S3_SECRET_REGION
-          script: |
-            cd /home/ubuntu/app
-            echo "Checking environment variables..."
-            echo "Database username: $DB_USERNAME"
-            sudo -E java -jar \
-            -Dspring.datasource.url="jdbc:mysql://localhost:3306/fitmon" \
-            -Dspring.datasource.username="$DB_USERNAME" \
-            -Dspring.datasource.password="$DB_PASSWORD" \
-            -Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect \
-            -Dspring.cloud.aws.credentials.accessKey="$AWS_S3_ACCESS_KEY" \
-            -Dspring.cloud.aws.credentials.secretKey="$AWS_S3_SECRET_ACCESS_KEY" \
-            -Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
-            -Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
-            cicd.jar > output.log 2>&1 &
+        script_stop: true
+        envs: DB_USERNAME,DB_PASSWORD,AWS_S3_ACCESS_KEY,AWS_S3_SECRET_ACCESS_KEY,AWS_S3_BUCKET_NAME,AWS_S3_SECRET_REGION
+        script: |
+          cd /home/ubuntu/app
+          echo "Stopping the running application..."
+          # 기존 프로세스 종료
+          sudo pkill -f cicd.jar || true
+          
+          # 프로세스가 완전히 종료될 때까지 잠시 대기
+          sleep 5
+          
+          echo "Checking if process is stopped..."
+          if pgrep -f cicd.jar; then
+            echo "Force killing the process..."
+            sudo pkill -9 -f cicd.jar || true
+          fi
+          
+          echo "Starting new application..."
+          echo "Database username: $DB_USERNAME"
+          sudo -E java -jar \
+          -Dspring.datasource.url="jdbc:mysql://localhost:3306/fitmon" \
+          -Dspring.datasource.username="$DB_USERNAME" \
+          -Dspring.datasource.password="$DB_PASSWORD" \
+          -Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect \
+          -Dspring.cloud.aws.credentials.accessKey="$AWS_S3_ACCESS_KEY" \
+          -Dspring.cloud.aws.credentials.secretKey="$AWS_S3_SECRET_ACCESS_KEY" \
+          -Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
+          -Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
+          cicd.jar > output.log 2>&1 &
+          
+          echo "Waiting for application to start..."
+          sleep 10
+          
+          echo "Checking application status..."
+          if pgrep -f cicd.jar > /dev/null; then
+            echo "Application is running."
+          else
+            echo "Application failed to start."
+            tail -n 50 output.log
+            exit 1
+          fi
