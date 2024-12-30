@@ -13,11 +13,8 @@ else
     sleep 5
 fi
 
-echo "> 새 어플리케이션 배포"
-cd $REPOSITORY
-
-echo "> Git Pull"
-git pull origin dev
+echo "> Git Fetch"
+git fetch origin dev
 
 echo "> 로컬 변경 사항을 버리고 원격 dev 브랜치와 동기화"
 git reset --hard origin/dev
@@ -27,9 +24,6 @@ git clean -fd
 
 echo "> 프로젝트 Build 시작"
 ./gradlew clean build -x test
-
-echo "> Build 파일 복사"
-cp build/libs/*.jar $REPOSITORY/
 
 echo "> 새 어플리케이션 배포"
 JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
