@@ -47,24 +47,20 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script_stop: true
-        script: |
+        envs: |
+          DB_USERNAME="${{ secrets.DB_USERNAME }}"
+          DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          AWS_S3_ACCESS_KEY="${{ secrets.AWS_S3_ACCESS_KEY }}"
+          AWS_S3_SECRET_ACCESS_KEY="${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}"
+          AWS_S3_BUCKET_NAME="${{ secrets.AWS_S3_BUCKET_NAME }}"
+          AWS_S3_SECRET_REGION="${{ secrets.AWS_S3_SECRET_REGION }}"
+          script: |
           cd /home/ubuntu/app
-          export DB_USERNAME=${{ secrets.DB_USERNAME }}
-          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          export AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}
-          export AWS_S3_SECRET_ACCESS_KEY=${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
-          export AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
-          export AWS_S3_SECRET_REGION=${{ secrets.AWS_S3_SECRET_REGION }}
-          echo "Current directory: $(pwd)"
-          echo "Checking if jar exists:"
-          ls -l cicd.jar
-          echo "Killing existing process:"
-          sudo fuser -k -n tcp 8080 || true
-          echo "Starting new process:"
-          sudo nohup java -jar cicd.jar > output.log 2>&1 &
-          echo "Waiting for application to start..."
-          sleep 10
-          echo "Checking process:"
-          ps -ef | grep java
-          echo "Checking logs:"
-          tail -n 50 output.log
+          sudo -E java -jar \
+          -Dspring.datasource.username="$DB_USERNAME" \
+          -Dspring.datasource.password="$DB_PASSWORD" \
+          -Dspring.cloud.aws.credentials.accessKey="$AWS_S3_ACCESS_KEY" \
+          -Dspring.cloud.aws.credentials.secretKey="$AWS_S3_SECRET_ACCESS_KEY" \
+          -Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
+          -Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
+          cicd.jar > output.log 2>&1 &
