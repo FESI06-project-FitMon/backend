@@ -26,7 +26,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          envs:
+          envs: DB_USERNAME,DB_PASSWORD,AWS_S3_ACCESS_KEY,AWS_S3_SECRET_ACCESS_KEY,AWS_S3_BUCKET_NAME,AWS_S3_REGION
+          env:
             DB_USERNAME: ${{ secrets.DB_USERNAME }}
             DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
             AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
