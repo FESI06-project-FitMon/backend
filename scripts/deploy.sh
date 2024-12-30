@@ -1,34 +1,35 @@
 #!/bin/bash
 
-REPOSITORY=/home/ubuntu/app
+echo "Stopping the running application..."
+sudo pkill -f cicd.jar || true
 
-echo "> 현재 구동 중인 애플리케이션 pid 확인"
-CURRENT_PID=$(lsof -ti tcp:8080)
+echo "Waiting for process to stop..."
+while pgrep -f cicd.jar > /dev/null; do
+  echo "Waiting..."
+  sleep 1
+done
 
-if [ -z "$CURRENT_PID" ]; then
-    echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
+echo "Starting new application..."
+echo "Database username: $DB_USERNAME"
+sudo -E java -jar \
+-Dspring.datasource.url="jdbc:mysql://localhost:3306/fitmon" \
+-Dspring.datasource.username="$DB_USERNAME" \
+-Dspring.datasource.password="$DB_PASSWORD" \
+-Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect \
+-Dspring.cloud.aws.credentials.accessKey="$AWS_S3_ACCESS_KEY" \
+-Dspring.cloud.aws.credentials.secretKey="$AWS_S3_SECRET_ACCESS_KEY" \
+-Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
+-Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
+cicd.jar > output.log 2>&1 &
+
+echo "Waiting for application to start..."
+sleep 10
+
+if pgrep -f cicd.jar > /dev/null; then
+  echo "Application started successfully"
+  exit 0
 else
-    echo "> kill -15 $CURRENT_PID"
-    kill -15 $CURRENT_PID
-    sleep 5
+  echo "Application failed to start. Check logs:"
+  tail -n 50 output.log
+  exit 1
 fi
-
-echo "> Git Fetch"
-git fetch origin dev
-
-echo "> 로컬 변경 사항을 버리고 원격 dev 브랜치와 동기화"
-git reset --hard origin/dev
-
-echo "> 필요 없는 파일 제거"
-git clean -fd
-
-echo "> 프로젝트 Build 시작"
-./gradlew clean build -x test
-
-echo "> 새 어플리케이션 배포"
-JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
-
-echo "> JAR Name: $JAR_NAME"
-nohup java -jar \
-    -Dspring.profiles.active=dev \
-    $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
