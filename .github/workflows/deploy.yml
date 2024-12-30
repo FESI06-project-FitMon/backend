@@ -30,14 +30,15 @@ jobs:
     - name: 빌드된 파일 이름 변경하기
       run: mv ./build/libs/*SNAPSHOT.jar ./cicd.jar
 
-    - name: SCP로 EC2에 빌드된 파일 전송하기
+    - name: SCP로 EC2에 파일 전송하기
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
-        source: cicd.jar
-        target: /home/ubuntu/app
+        source: "cicd.jar,scripts/deploy.sh"
+        target: "/home/ubuntu/app"
+        strip_components: 0
 
   deploy:
     needs: build
@@ -61,38 +62,5 @@ jobs:
           envs: DB_USERNAME,DB_PASSWORD,AWS_S3_ACCESS_KEY,AWS_S3_SECRET_ACCESS_KEY,AWS_S3_BUCKET_NAME,AWS_S3_SECRET_REGION
           script: |
             cd /home/ubuntu/app
-            echo "Stopping the running application..."
-            sudo pkill -f cicd.jar || true  # || true를 추가하여 오류 코드 무시
-
-            echo "Waiting for process to stop..."
-            while pgrep -f cicd.jar > /dev/null; do
-              echo "Waiting..."
-              sleep 1
-            done
-
-            echo "Starting new application..."
-            echo "Database username: $DB_USERNAME"
-            sudo -E java -jar \
-            -Dspring.datasource.url="jdbc:mysql://localhost:3306/fitmon" \
-            -Dspring.datasource.username="$DB_USERNAME" \
-            -Dspring.datasource.password="$DB_PASSWORD" \
-            -Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect \
-            -Dspring.cloud.aws.credentials.accessKey="$AWS_S3_ACCESS_KEY" \
-            -Dspring.cloud.aws.credentials.secretKey="$AWS_S3_SECRET_ACCESS_KEY" \
-            -Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
-            -Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
-            cicd.jar > output.log 2>&1 &
-
-            # 애플리케이션이 시작될 때까지 대기
-            echo "Waiting for application to start..."
-            sleep 10
-
-            # 실행 상태 확인
-            if pgrep -f cicd.jar > /dev/null; then
-              echo "Application started successfully"
-              exit 0
-            else
-              echo "Application failed to start. Check logs:"
-              tail -n 50 output.log
-              exit 1
-            fi
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh
