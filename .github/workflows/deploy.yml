@@ -62,16 +62,14 @@ jobs:
           script: |
             cd /home/ubuntu/app
             echo "Stopping the running application..."
-            sudo pkill -f cicd.jar || true
-            
-            sleep 5
-            
-            echo "Checking if process is stopped..."
-            if pgrep -f cicd.jar; then
-              echo "Force killing the process..."
-              sudo pkill -9 -f cicd.jar || true
-            fi
-            
+            sudo pkill -f cicd.jar || true  # || true를 추가하여 오류 코드 무시
+
+            echo "Waiting for process to stop..."
+            while pgrep -f cicd.jar > /dev/null; do
+              echo "Waiting..."
+              sleep 1
+            done
+
             echo "Starting new application..."
             echo "Database username: $DB_USERNAME"
             sudo -E java -jar \
@@ -84,15 +82,17 @@ jobs:
             -Dspring.cloud.aws.s3.bucket="$AWS_S3_BUCKET_NAME" \
             -Dspring.cloud.aws.region.static="$AWS_S3_SECRET_REGION" \
             cicd.jar > output.log 2>&1 &
-            
+
+            # 애플리케이션이 시작될 때까지 대기
             echo "Waiting for application to start..."
             sleep 10
-            
-            echo "Checking application status..."
+
+            # 실행 상태 확인
             if pgrep -f cicd.jar > /dev/null; then
-              echo "Application is running."
+              echo "Application started successfully"
+              exit 0
             else
-              echo "Application failed to start."
+              echo "Application failed to start. Check logs:"
               tail -n 50 output.log
               exit 1
             fi
