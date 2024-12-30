@@ -31,6 +31,4 @@ JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
 echo "> JAR Name: $JAR_NAME"
 nohup java -jar \
     -Dspring.profiles.active=dev \
-    -Dspring.datasource.username=${DB_USERNAME} \
-    -Dspring.datasource.password=${DB_PASSWORD} \
     $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
