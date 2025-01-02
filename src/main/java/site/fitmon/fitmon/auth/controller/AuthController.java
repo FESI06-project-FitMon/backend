@@ -20,7 +20,7 @@ import site.fitmon.fitmon.auth.service.AuthService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class AuthController {
+public class AuthController implements AuthSwaggerController {
 
     private final AuthService authService;
 
