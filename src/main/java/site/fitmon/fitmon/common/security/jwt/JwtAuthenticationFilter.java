@@ -5,25 +5,33 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import site.fitmon.fitmon.auth.domain.CustomUserDetails;
+import site.fitmon.fitmon.member.domain.Member;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         String token = resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
             String email = jwtTokenProvider.getEmail(token);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+            Member member = Member.builder()
+                .email(email)
+                .build();
+            CustomUserDetails customUserDetails = new CustomUserDetails(member);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                new CustomUserDetails(member), null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
