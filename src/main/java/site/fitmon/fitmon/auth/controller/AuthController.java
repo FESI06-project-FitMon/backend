@@ -1,6 +1,7 @@
 package site.fitmon.fitmon.auth.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import site.fitmon.fitmon.auth.dto.request.LoginRequest;
 import site.fitmon.fitmon.auth.dto.request.SignupRequest;
 import site.fitmon.fitmon.auth.dto.response.TokenResponse;
 import site.fitmon.fitmon.auth.service.AuthService;
+import site.fitmon.fitmon.common.security.jwt.JwtTokenProvider;
 
 @Slf4j
 @RestController
@@ -22,6 +24,7 @@ import site.fitmon.fitmon.auth.service.AuthService;
 @RequestMapping("/api/v1")
 public class AuthController implements AuthSwaggerController {
 
+    private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
 
     @PostMapping("/signup")
@@ -40,6 +43,21 @@ public class AuthController implements AuthSwaggerController {
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            authService.logout(jwtTokenProvider.getEmail(token.substring(7)));
+        }
+
+        Cookie refreshTokenCookie = new Cookie("refresh_token", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);
 
         return ResponseEntity.ok().build();

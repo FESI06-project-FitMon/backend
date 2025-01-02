@@ -1,6 +1,9 @@
 package site.fitmon.fitmon.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Transactional
     public void signUp(SignupRequest request) {
@@ -52,5 +56,13 @@ public class AuthService {
             );
 
         return new TokenResponse(accessToken, refreshToken);
+    }
+
+    @Transactional
+    public void logout(String email) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        refreshTokenRepository.deleteByMember(member);
+        SecurityContextHolder.clearContext();
     }
 }
