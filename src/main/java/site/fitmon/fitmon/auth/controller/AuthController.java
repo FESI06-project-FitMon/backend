@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.fitmon.fitmon.auth.dto.request.LoginRequest;
 import site.fitmon.fitmon.auth.dto.request.SignupRequest;
 import site.fitmon.fitmon.auth.dto.response.TokenResponse;
+import site.fitmon.fitmon.auth.dto.response.LoginResponse;
 import site.fitmon.fitmon.auth.service.AuthService;
 import site.fitmon.fitmon.common.dto.ApiResponse;
 import site.fitmon.fitmon.common.security.jwt.JwtTokenProvider;
@@ -37,7 +38,8 @@ public class AuthController implements AuthSwaggerController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request,
+        HttpServletResponse response) {
         TokenResponse tokenResponse = authService.login(request);
         response.addHeader("Authorization", "Bearer " + tokenResponse.getAccessToken());
         Cookie refreshTokenCookie = new Cookie("refresh_token", tokenResponse.getRefreshToken());
@@ -47,7 +49,7 @@ public class AuthController implements AuthSwaggerController {
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshTokenCookie);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(LoginResponse.of(tokenResponse.getMemberId(), tokenResponse.getEmail()));
     }
 
     @PostMapping("/logout")
