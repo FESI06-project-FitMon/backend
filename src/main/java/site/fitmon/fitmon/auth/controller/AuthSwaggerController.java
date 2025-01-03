@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.fitmon.fitmon.auth.dto.request.LoginRequest;
 import site.fitmon.fitmon.auth.dto.request.SignupRequest;
-import site.fitmon.fitmon.auth.dto.response.TokenResponse;
+import site.fitmon.fitmon.auth.dto.response.LoginResponse;
 
 @Tag(name = "인증 API", description = "인증 API")
 public interface AuthSwaggerController {
@@ -43,7 +43,7 @@ public interface AuthSwaggerController {
             description = "아이디 또는 비밀번호가 일치하지 않습니다.",
             content = {@Content()}
         )})
-    ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response);
+    ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response);
 
     @Operation(summary = "로그아웃")
     @ApiResponses(value = {

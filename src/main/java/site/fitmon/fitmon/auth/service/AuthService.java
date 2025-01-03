@@ -54,7 +54,7 @@ public class AuthService {
                 () -> refreshTokenRepository.save(new RefreshToken(refreshToken, member))
             );
 
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponse(accessToken, refreshToken, member.getId(), member.getEmail());
     }
 
     @Transactional
