@@ -29,6 +29,7 @@ public class GatheringService {
 
         Gatherings gathering = Gatherings.builder()
             .title(request.getTitle())
+            .description(request.getDescription())
             .captain(member)
             .mainType(request.getMainType())
             .subType(request.getSubType())

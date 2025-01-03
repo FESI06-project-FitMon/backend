@@ -41,6 +41,9 @@ public class Gatherings extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Member captain;
 
@@ -82,11 +85,13 @@ public class Gatherings extends BaseEntity {
     private String tags;
 
     @Builder
-    public Gatherings(String title, Member captain, MainType mainType, SubType subType, String imageUrl,
+    public Gatherings(String title, Member captain, String description, MainType mainType, SubType subType,
+        String imageUrl,
         LocalDateTime startDate,
         LocalDateTime endDate, String mainLocation, String subLocation, Integer totalCount, Integer minCount,
         Integer participantCount, List<String> tags) {
         this.title = title;
+        this.description = description;
         this.captain = captain;
         this.mainType = mainType;
         this.subType = subType;

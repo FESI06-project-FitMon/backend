@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -21,6 +22,10 @@ public class GatheringCreateRequest {
     @Schema(description = "모임 제목", example = "같이 운동해요!")
     @NotNull(message = "제목은 필수 입력 값입니다.")
     private String title;
+
+    @Schema(description = "모임 상세", example = "매일 같이 운동하며 건강해지는 모임입니다.")
+    @Size(max = 50, message = "50자 이하로 입력해주세요.")
+    private String description;
 
     @Schema(description = "모임 메인 카테고리", example = "유산소형")
     @NotNull(message = "메인 카테고리는 필수 입력 값입니다.")
@@ -54,7 +59,7 @@ public class GatheringCreateRequest {
     private int totalCount;
 
     @Schema(description = "모임 최소 인원", example = "5")
-    @Positive(message = "최소 인원은 1명 이상이어야 합니다.")
+    @Min(value = 5, message = "최소 인원은 5명 이상이어야 합니다.")
     private int minCount;
 
     @Schema(description = "모임 태그 목록 (최대 3개)", example = "[\"초보환영\", \"저녁운동\", \"함께달리기\"]")
