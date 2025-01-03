@@ -29,7 +29,7 @@ public interface AuthSwaggerController {
             description = "이미 사용중인 아이디입니다.",
             content = {@Content()}
         )})
-    ResponseEntity<Void> signUp(@Valid @RequestBody SignupRequest request);
+    ResponseEntity<site.fitmon.fitmon.common.dto.ApiResponse> signUp(@Valid @RequestBody SignupRequest request);
 
     @Operation(summary = "로그인")
     @ApiResponses(value = {

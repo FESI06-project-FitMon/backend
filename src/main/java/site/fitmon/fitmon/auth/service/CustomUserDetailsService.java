@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import site.fitmon.fitmon.auth.domain.CustomUserDetails;
+import site.fitmon.fitmon.common.exception.ApiException;
+import site.fitmon.fitmon.common.exception.ErrorCode;
 import site.fitmon.fitmon.member.repository.MemberRepository;
 
 @Service
@@ -18,6 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return memberRepository.findByEmail(username)
             .map(CustomUserDetails::new)
-            .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     }
 }

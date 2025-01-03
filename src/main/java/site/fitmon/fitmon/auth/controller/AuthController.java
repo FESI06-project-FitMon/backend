@@ -16,6 +16,7 @@ import site.fitmon.fitmon.auth.dto.request.LoginRequest;
 import site.fitmon.fitmon.auth.dto.request.SignupRequest;
 import site.fitmon.fitmon.auth.dto.response.TokenResponse;
 import site.fitmon.fitmon.auth.service.AuthService;
+import site.fitmon.fitmon.common.dto.ApiResponse;
 import site.fitmon.fitmon.common.security.jwt.JwtTokenProvider;
 
 @Slf4j
@@ -28,10 +29,11 @@ public class AuthController implements AuthSwaggerController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<ApiResponse> signUp(@Valid @RequestBody SignupRequest request) {
         authService.signUp(request);
         log.info(request.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.of("사용자 생성 성공"));
     }
 
     @PostMapping("/login")
