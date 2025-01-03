@@ -10,7 +10,7 @@ while pgrep -f cicd.jar > /dev/null; do
 done
 
 echo "Creating environment variables file..."
-cat > /home/ubuntu/app/.env << EOL
+cat > /home/ubuntu/app/application-env.properties << EOL
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
 spring.cloud.aws.credentials.access-key=${AWS_S3_ACCESS_KEY}
@@ -26,7 +26,7 @@ echo "AWS_S3_REGION is set: [$(if [ -n "$AWS_S3_REGION" ]; then echo "YES"; else
 
 echo "Starting new application..."
 sudo -E java -jar \
--Dspring.config.import=file:/home/ubuntu/app/.env \
+-Dspring.config.import=optional:file:/home/ubuntu/app/application-env.properties \
 -Dspring.config.location=file:/home/ubuntu/app/application.yml \
 cicd.jar > /home/ubuntu/app/output.log 2>&1 &
 
