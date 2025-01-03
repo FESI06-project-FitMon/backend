@@ -15,7 +15,7 @@ import site.fitmon.fitmon.gatherings.dto.request.GatheringCreateRequest;
 @Tag(name = "모임 API", description = "모임 API")
 public interface GatheringsSwaggerController {
 
-    @Operation(summary = "모임생성")
+    @Operation(summary = "모임 생성")
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "201",
