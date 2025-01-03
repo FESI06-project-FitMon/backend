@@ -2,7 +2,6 @@ package site.fitmon.fitmon.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +10,6 @@ import site.fitmon.fitmon.member.domain.Member;
 @Getter
 @NoArgsConstructor
 public class SignupRequest {
-
-    @Schema(description = "이름", example = "김핏몬")
-    @NotNull(message = "이름은 필수 입력값입니다.")
-    private String name;
 
     @Schema(description = "이메일", example = "kimfitmon@fitmon.site")
     @Email(message = "유효하지 않은 이메일 형식입니다.")
@@ -30,7 +25,6 @@ public class SignupRequest {
 
     public Member toEntity(String encodedPassword) {
         return Member.builder()
-            .name(name)
             .email(email)
             .nickName(nickName)
             .password(encodedPassword)

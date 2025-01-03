@@ -24,4 +24,11 @@ public abstract class BaseEntity {
     @NotNull
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
