@@ -69,9 +69,6 @@ public class Gathering extends BaseEntity {
     @Column(nullable = false)
     private Integer minCount;
 
-    @Column(nullable = false)
-    private Integer participantCount;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private GatheringStatus status = GatheringStatus.시작전;
@@ -83,7 +80,7 @@ public class Gathering extends BaseEntity {
         String imageUrl,
         LocalDateTime startDate,
         LocalDateTime endDate, String mainLocation, String subLocation, Integer totalCount, Integer minCount,
-        Integer participantCount, List<String> tags) {
+        List<String> tags) {
         this.title = title;
         this.description = description;
         this.mainType = mainType;
@@ -95,7 +92,6 @@ public class Gathering extends BaseEntity {
         this.subLocation = subLocation;
         this.totalCount = totalCount;
         this.minCount = minCount;
-        this.participantCount = participantCount;
         this.status = GatheringStatus.시작전;
         setTags(tags);
     }
