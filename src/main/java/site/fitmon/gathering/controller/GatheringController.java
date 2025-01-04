@@ -25,6 +25,8 @@ public class GatheringController implements GatheringsSwaggerController{
     public ResponseEntity<ApiResponse> createGathering(
         @Valid @RequestBody GatheringCreateRequest request,
         @AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("request1 = " + request.getImageUrl());
+        System.out.println("request2 = " + request.getChallenges().get(0).getImageUrl());
         gatheringService.createGathering(request, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.of("모임 생성 성공"));

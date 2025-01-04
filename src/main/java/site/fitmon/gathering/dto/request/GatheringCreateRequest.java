@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.fitmon.challenge.dto.ChallengeCreateRequest;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 
@@ -65,6 +66,9 @@ public class GatheringCreateRequest {
     @Schema(description = "모임 태그 목록 (최대 3개)", example = "[\"초보환영\", \"저녁운동\", \"함께달리기\"]")
     private List<String> tags;
 
+    @Schema(description = "챌린지 목록")
+    private List<ChallengeCreateRequest> challenges;
+
     @AssertTrue(message = "종료일은 시작일 이후여야 합니다.")
     private boolean isValidDateRange() {
         return startDate != null && endDate != null && !endDate.isBefore(startDate);
@@ -72,7 +76,7 @@ public class GatheringCreateRequest {
 
     @AssertTrue(message = "최소 인원은 총 인원을 초과할 수 없습니다.")
     private boolean isValidCountRange() {
-        return totalCount <= 0 && minCount <= 0 && totalCount >= minCount;
+        return totalCount > 0 && minCount > 0 && totalCount >= minCount;
     }
 }
 
