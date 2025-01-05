@@ -33,12 +33,12 @@ public class GatheringParticipant extends BaseEntity {
     private Member member;
 
     @Column(nullable = false)
-    private Boolean isCaptain;
+    private boolean captainStatus;
 
     @Builder
-    public GatheringParticipant(Gathering gathering, Member member, Boolean isCaptain) {
+    public GatheringParticipant(Gathering gathering, Member member, boolean captainStatus) {
         this.gathering = gathering;
         this.member = member;
-        this.isCaptain = isCaptain;
+        this.captainStatus = captainStatus;
     }
 }

@@ -2,7 +2,6 @@ package site.fitmon.gathering.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +53,7 @@ public class GatheringService {
         GatheringParticipant gatheringParticipant = GatheringParticipant.builder()
             .member(member)
             .gathering(gathering)
-            .isCaptain(true)
+            .captainStatus(true)
             .build();
 
         Gathering savedGathering = gatheringRepository.save(gathering);
