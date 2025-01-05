@@ -26,6 +26,9 @@ public enum ErrorCode {
     EXCEEDS_MAX_TAGS(BAD_REQUEST, "태그는 최대 3개까지만 설정할 수 있습니다."),
     INVALID_START_DATE(BAD_REQUEST, "시작일은 현재시간 이후여야 합니다."),
     INVALID_DATE_RANGE(BAD_REQUEST, "종료일은 현재시간 이후여야 합니다."),
+    GATHERING_NOT_FOUND(BAD_REQUEST, "해당 모임을 찾을 수 없습니다."),
+    GATHERING_PARTICIPANT_NOT_FOUND(BAD_REQUEST, "해당 모임의 참여자가 아닙니다."),
+    GATHERING_NOT_CAPTAIN(BAD_REQUEST, "모임의 주최자가 아닙니다."),
 
     //Image
     IMAGE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "이미지 업로드 중 오류가 발생했습니다."),

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import site.fitmon.auth.dto.request.SignupRequest;
 
 @Tag(name = "회원 API", description = "회원 API")
-public interface SwaggerMemberController {
+public interface MemberSwaggerController {
 
     @Operation(summary = "회원가입")
     @ApiResponses(value = {
