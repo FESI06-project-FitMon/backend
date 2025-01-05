@@ -21,7 +21,7 @@ public class ChallengeCreateRequest {
     @Size(max = 50, message = "50자 이하로 입력해주세요.")
     private String description;
 
-    @Schema(description = "챌린지 이미지 URL", example = "https://fitmon-bucket.s3.amazonaws.com/gatherings/af61233a-ed83-432c-b685-1d29a6c75de1_whale.jpg")
+    @Schema(description = "챌린지 이미지 URL", example = "https://fitmon-bucket.s3.amazonaws.com/challenges/df171e45-29b7-4b37-9ad4-fbbe7c94e417_running.jpg")
     private String imageUrl;
 
     @Schema(description = "챌린지 시작 일시", example = "2025-03-10T14:00:00")
