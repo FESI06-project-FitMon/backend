@@ -24,6 +24,7 @@ import site.fitmon.common.security.jwt.JwtTokenProvider;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,6 +54,8 @@ public class SecurityConfig {
                 sessionManagement ->
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(handling ->
+                handling.authenticationEntryPoint(authenticationEntryPoint))
             .build();
     }
 

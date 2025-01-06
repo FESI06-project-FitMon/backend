@@ -11,4 +11,6 @@ import site.fitmon.member.domain.Member;
 public interface GatheringParticipantRepository extends JpaRepository<GatheringParticipant, Long> {
 
     Optional<GatheringParticipant> findByGatheringAndMember(Gathering gathering, Member member);
+
+    boolean existsByGatheringAndMember(Gathering foundGathering, Member member);
 }

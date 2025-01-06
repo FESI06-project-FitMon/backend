@@ -65,6 +65,27 @@ public class GatheringService {
         }
     }
 
+    @Transactional
+    public void joinGathering(Long gathering, String email) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Gathering foundGathering = gatheringRepository.findById(gathering)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+
+        if (gatheringParticipantRepository.existsByGatheringAndMember(foundGathering, member)) {
+            throw new ApiException(ErrorCode.ALREADY_JOINED_GATHERING);
+        }
+
+        GatheringParticipant gatheringParticipant = GatheringParticipant.builder()
+            .member(member)
+            .gathering(foundGathering)
+            .captainStatus(false)
+            .build();
+
+        gatheringParticipantRepository.save(gatheringParticipant);
+    }
+
     private void createChallenges(List<ChallengeCreateRequest> challengeRequests, Gathering gathering) {
         List<Challenge> challenges = challengeRequests.stream()
             .map(request -> Challenge.builder()

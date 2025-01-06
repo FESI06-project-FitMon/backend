@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
@@ -29,5 +30,22 @@ public interface GatheringsSwaggerController {
         )})
     ResponseEntity<ApiResponse> createGathering(
         @Valid @RequestBody GatheringCreateRequest request,
+        @AuthenticationPrincipal UserDetails userDetails);
+
+
+    @Operation(summary = "모임 참가")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "201",
+            description = "모임 참가 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> joinGathering(
+        @PathVariable Long gathering,
         @AuthenticationPrincipal UserDetails userDetails);
 }
