@@ -43,8 +43,19 @@ public class ChallengeController implements ChallengeSwaggerController {
         @PathVariable Long challengeId,
         @AuthenticationPrincipal UserDetails userDetails) {
 
-        challengeService.verifyChallenge(challengeId, userDetails.getUsername());
+        challengeService.verifyChallenge(request, challengeId, userDetails.getUsername());
 
         return ResponseEntity.ok(ApiResponse.of("챌린지 인증 성공"));
+    }
+
+    @PostMapping("/challenges/{challengeId}/participants")
+    public ResponseEntity<ApiResponse> joinChallenge(
+        @PathVariable Long challengeId,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        challengeService.joinChallenge(challengeId, userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.of("챌린지 참가 성공"));
     }
 }

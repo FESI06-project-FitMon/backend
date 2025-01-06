@@ -43,7 +43,9 @@ public enum ErrorCode {
     CHALLENGE_START_DATE_BEFORE_GATHERING(BAD_REQUEST, "챌린지 시작일은 모임 시작일 이후여야 합니다."),
     CHALLENGE_END_DATE_AFTER_GATHERING(BAD_REQUEST, "챌린지 종료일은 모임 종료일 이전이어야 합니다."),
     INVALID_CHALLENGE_DATE_RANGE(BAD_REQUEST, "챌린지 시작일은 챌린지 종료일 이전이어야 합니다."),
-    CHALLENGE_NOT_FOUND(BAD_REQUEST, "해당 챌린지를 찾을 수 없습니다.");
+    CHALLENGE_NOT_FOUND(BAD_REQUEST, "해당 챌린지를 찾을 수 없습니다."),
+    ALREADY_JOINED_CHALLENGE(BAD_REQUEST, "이미 참여한 챌린지입니다."),
+    CHALLENGE_PARTICIPANT_NOT_FOUND(BAD_REQUEST, "해당 챌린지의 참여자가 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
