@@ -1,11 +1,14 @@
 package site.fitmon.challenge.dto.response;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-public class PopularChallengeResponse {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class GatheringChallengesResponse {
 
     private Long gatheringId;
     private Long challengeId;
@@ -14,4 +17,6 @@ public class PopularChallengeResponse {
     private String imageUrl;
     private long participantCount;
     private long successParticipantCount;
+    private boolean participantStatus;
+    private boolean verificationStatus;
 }

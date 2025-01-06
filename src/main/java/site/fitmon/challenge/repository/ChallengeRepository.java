@@ -9,7 +9,7 @@ import site.fitmon.challenge.domain.Challenge;
 import site.fitmon.challenge.dto.response.PopularChallengeResponse;
 
 @Repository
-public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
+public interface ChallengeRepository extends JpaRepository<Challenge, Long>, ChallengeRepositoryCustom {
 
     @Query(value = "SELECT new site.fitmon.challenge.dto.response.PopularChallengeResponse(" +
         "c.gathering.id, c.id, c.title, c.description, c.imageUrl, " +
