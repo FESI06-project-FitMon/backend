@@ -22,6 +22,7 @@ import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
+import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 import site.fitmon.gathering.service.GatheringService;
 
@@ -79,6 +80,13 @@ public class GatheringController implements GatheringsSwaggerController {
         PageRequest pageable = PageRequest.of(page, 8);
 
         return ResponseEntity.ok(gatheringService.searchGatherings(condition, pageable));
+    }
+
+    @GetMapping("/{gatheringId}")
+    public ResponseEntity<GatheringDetailResponse> getGatheringDetail(
+        @PathVariable Long gatheringId
+    ) {
+        return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId));
     }
 
 }

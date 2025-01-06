@@ -17,6 +17,7 @@ import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.domain.GatheringParticipant;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
+import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 import site.fitmon.gathering.repository.GatheringParticipantRepository;
 import site.fitmon.gathering.repository.GatheringRepository;
@@ -150,5 +151,10 @@ public class GatheringService {
         if (endDate.isBefore(startDate)) {
             throw new ApiException(ErrorCode.INVALID_DATE_RANGE);
         }
+    }
+
+    public GatheringDetailResponse getGatheringDetail(Long gatheringId) {
+        return gatheringRepository.findGatheringDetail(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
     }
 }
