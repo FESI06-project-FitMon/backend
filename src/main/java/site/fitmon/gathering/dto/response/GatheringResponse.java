@@ -12,6 +12,7 @@ import site.fitmon.gathering.domain.SubType;
 
 @Getter
 public class GatheringResponse {
+
     private Long gatheringId;
     private String title;
     private String description;
@@ -22,16 +23,17 @@ public class GatheringResponse {
     private LocalDateTime endDate;
     private String mainLocation;
     private String subLocation;
+    private Integer minCount;
     private Integer totalCount;
-    private Long currentParticipants;
+    private Long participantCount;
     private GatheringStatus status;
     private List<String> tags;
 
     @Builder
     public GatheringResponse(Long gatheringId, String title, String description, MainType mainType,
-            SubType subType, String imageUrl, LocalDateTime startDate, LocalDateTime endDate,
-            String mainLocation, String subLocation, Integer totalCount, Long currentParticipants,
-            GatheringStatus status, String tags) {
+        SubType subType, String imageUrl, LocalDateTime startDate, LocalDateTime endDate,
+        String mainLocation, String subLocation, Integer minCount, Integer totalCount, Long participantCount,
+        GatheringStatus status, String tags) {
         this.gatheringId = gatheringId;
         this.title = title;
         this.description = description;
@@ -42,8 +44,9 @@ public class GatheringResponse {
         this.endDate = endDate;
         this.mainLocation = mainLocation;
         this.subLocation = subLocation;
+        this.minCount = minCount;
         this.totalCount = totalCount;
-        this.currentParticipants = currentParticipants;
+        this.participantCount = participantCount;
         this.status = status;
         this.tags = (tags != null ? Arrays.asList(tags.split(",")) : new ArrayList<>());
     }
