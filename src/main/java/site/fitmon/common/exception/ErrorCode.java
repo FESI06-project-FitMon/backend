@@ -14,7 +14,8 @@ public enum ErrorCode {
     // Common
     INVALID_INPUT_VALUE(BAD_REQUEST, "유효하지 않은 입력값입니다."),
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "서버 오류"),
-    USER_NOT_FOUND(UNAUTHORIZED, "인증 정보가 잘못 되었습니다."),
+    USER_NOT_FOUND(UNAUTHORIZED, "유저 정보를 찾을 수 없습니다."),
+    UNAUTHORIZED_CODE(UNAUTHORIZED, "인증 정보가 올바르지 않습니다."),
 
     // Member
     DUPLICATE_MEMBER_EMAIL(BAD_REQUEST, "이미 존재하는 이메일입니다."),
@@ -41,7 +42,8 @@ public enum ErrorCode {
     //Challenge
     CHALLENGE_START_DATE_BEFORE_GATHERING(BAD_REQUEST, "챌린지 시작일은 모임 시작일 이후여야 합니다."),
     CHALLENGE_END_DATE_AFTER_GATHERING(BAD_REQUEST, "챌린지 종료일은 모임 종료일 이전이어야 합니다."),
-    INVALID_CHALLENGE_DATE_RANGE(BAD_REQUEST, "챌린지 시작일은 챌린지 종료일 이전이어야 합니다.");
+    INVALID_CHALLENGE_DATE_RANGE(BAD_REQUEST, "챌린지 시작일은 챌린지 종료일 이전이어야 합니다."),
+    CHALLENGE_NOT_FOUND(BAD_REQUEST, "해당 챌린지를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
