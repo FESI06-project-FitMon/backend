@@ -1,4 +1,4 @@
-package site.fitmon.challenge.dto;
+package site.fitmon.challenge.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
