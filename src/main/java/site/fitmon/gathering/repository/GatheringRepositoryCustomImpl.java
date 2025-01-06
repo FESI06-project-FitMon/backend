@@ -13,19 +13,28 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.domain.GatheringStatus;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.QGathering;
+import site.fitmon.gathering.domain.QGatheringParticipant;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
+import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
+import site.fitmon.gathering.dto.response.ParticipantsResponse;
+import site.fitmon.member.domain.QMember;
+import site.fitmon.review.domain.QReview;
 
 @Repository
 @RequiredArgsConstructor
@@ -84,6 +93,72 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         }
 
         return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    public Optional<GatheringDetailResponse> findGatheringDetail(Long gatheringId) {
+        Gathering gathering = queryFactory
+            .selectFrom(QGathering.gathering)
+            .where(QGathering.gathering.id.eq(gatheringId))
+            .fetchOne();
+
+        if (gathering == null) {
+            return Optional.empty();
+        }
+
+        List<ParticipantsResponse> recentParticipants = queryFactory
+            .select(Projections.constructor(ParticipantsResponse.class,
+                QMember.member.id,
+                QMember.member.nickName,
+                QMember.member.profileImageUrl,
+                QGatheringParticipant.gatheringParticipant.captainStatus))
+            .from(QGatheringParticipant.gatheringParticipant)
+            .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
+            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gatheringId))
+            .orderBy(QGatheringParticipant.gatheringParticipant.createdAt.desc())
+            .limit(5)
+            .fetch();
+
+        // 참가자 총 수 계산
+        Long participantCount = queryFactory
+            .select(QGatheringParticipant.gatheringParticipant.count())
+            .from(QGatheringParticipant.gatheringParticipant)
+            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gatheringId))
+            .fetchOne();
+
+        Double avgRating = queryFactory
+            .select(QReview.review.rating.avg())
+            .from(QReview.review)
+            .where(QReview.review.gathering.id.eq(gatheringId))
+            .fetchOne();
+
+        Long reviewCount = queryFactory
+            .select(QReview.review.count())
+            .from(QReview.review)
+            .where(QReview.review.gathering.id.eq(gatheringId))
+            .fetchOne();
+
+        return Optional.of(GatheringDetailResponse.builder()
+            .gatheringId(gathering.getId())
+            .title(gathering.getTitle())
+            .description(gathering.getDescription())
+            .mainType(gathering.getMainType())
+            .subType(gathering.getSubType())
+            .imageUrl(gathering.getImageUrl())
+            .startDate(gathering.getStartDate())
+            .endDate(gathering.getEndDate())
+            .mainLocation(gathering.getMainLocation())
+            .subLocation(gathering.getSubLocation())
+            .minCount(gathering.getMinCount())
+            .totalCount(gathering.getTotalCount())
+            .participantCount(participantCount)
+            .status(gathering.getStatus())
+            .tags(((gathering.getTags() != null ?
+                Arrays.asList(gathering.getTags().split(",")) :
+                Collections.emptyList()))
+            ).participants(recentParticipants)
+            .rating(avgRating != null ? Math.round(avgRating) : 0)
+            .guestBookCount(reviewCount)
+            .build());
     }
 
     private OrderSpecifier<?>[] createOrderSpecifiers(String sortBy, String direction,
