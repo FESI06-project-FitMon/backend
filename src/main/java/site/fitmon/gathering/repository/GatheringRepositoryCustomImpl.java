@@ -53,6 +53,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 gathering.endDate,
                 gathering.mainLocation,
                 gathering.subLocation,
+                gathering.minCount,
                 gathering.totalCount,
                 participantCount,
                 gathering.status,
