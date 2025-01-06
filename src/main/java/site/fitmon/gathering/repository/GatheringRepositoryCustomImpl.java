@@ -16,7 +16,6 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -95,16 +94,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    public Optional<GatheringDetailResponse> findGatheringDetail(Long gatheringId) {
-        Gathering gathering = queryFactory
-            .selectFrom(QGathering.gathering)
-            .where(QGathering.gathering.id.eq(gatheringId))
-            .fetchOne();
-
-        if (gathering == null) {
-            return Optional.empty();
-        }
-
+    public GatheringDetailResponse findGatheringDetail(Gathering gathering) {
         List<ParticipantsResponse> recentParticipants = queryFactory
             .select(Projections.constructor(ParticipantsResponse.class,
                 QMember.member.id,
@@ -113,7 +103,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 QGatheringParticipant.gatheringParticipant.captainStatus))
             .from(QGatheringParticipant.gatheringParticipant)
             .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
-            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gatheringId))
+            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
             .orderBy(QGatheringParticipant.gatheringParticipant.createdAt.desc())
             .limit(5)
             .fetch();
@@ -122,22 +112,22 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         Long participantCount = queryFactory
             .select(QGatheringParticipant.gatheringParticipant.count())
             .from(QGatheringParticipant.gatheringParticipant)
-            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gatheringId))
+            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
             .fetchOne();
 
         Double avgRating = queryFactory
             .select(QReview.review.rating.avg())
             .from(QReview.review)
-            .where(QReview.review.gathering.id.eq(gatheringId))
+            .where(QReview.review.gathering.id.eq(gathering.getId()))
             .fetchOne();
 
         Long reviewCount = queryFactory
             .select(QReview.review.count())
             .from(QReview.review)
-            .where(QReview.review.gathering.id.eq(gatheringId))
+            .where(QReview.review.gathering.id.eq(gathering.getId()))
             .fetchOne();
 
-        return Optional.of(GatheringDetailResponse.builder()
+        return GatheringDetailResponse.builder()
             .gatheringId(gathering.getId())
             .title(gathering.getTitle())
             .description(gathering.getDescription())
@@ -158,7 +148,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             ).participants(recentParticipants)
             .rating(avgRating != null ? Math.round(avgRating) : 0)
             .guestBookCount(reviewCount)
-            .build());
+            .build();
     }
 
     private OrderSpecifier<?>[] createOrderSpecifiers(String sortBy, String direction,
