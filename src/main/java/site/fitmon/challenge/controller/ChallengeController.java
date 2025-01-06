@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.fitmon.challenge.dto.ChallengeCreateRequest;
+import site.fitmon.challenge.dto.ChallengeEvidenceRequest;
 import site.fitmon.challenge.service.ChallengeService;
 import site.fitmon.common.dto.ApiResponse;
 
@@ -37,7 +38,8 @@ public class ChallengeController implements ChallengeSwaggerController {
     }
 
     @PostMapping("/challenges/{challengeId}/verification")
-    public ResponseEntity<ApiResponse> verficateChallenge(
+    public ResponseEntity<ApiResponse> verifyChallenge(
+        @Valid @RequestBody ChallengeEvidenceRequest request,
         @PathVariable Long challengeId,
         @AuthenticationPrincipal UserDetails userDetails) {
 
