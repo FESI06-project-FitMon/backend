@@ -11,13 +11,12 @@ public class ParticipantsResponse {
     private Long memberId;
     private String nickName;
     private String profileImageUrl;
-    private boolean captainStatus;
+
 
     @Builder
-    public ParticipantsResponse(Long memberId, String nickName, String profileImageUrl, boolean captainStatus) {
+    public ParticipantsResponse(Long memberId, String nickName, String profileImageUrl) {
         this.memberId = memberId;
         this.nickName = nickName;
         this.profileImageUrl = profileImageUrl;
-        this.captainStatus = captainStatus;
     }
 }

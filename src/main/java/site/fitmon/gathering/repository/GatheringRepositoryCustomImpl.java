@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -94,13 +95,12 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    public GatheringDetailResponse findGatheringDetail(Gathering gathering) {
+    public GatheringDetailResponse findGatheringDetail(Gathering gathering, String email) {
         List<ParticipantsResponse> recentParticipants = queryFactory
             .select(Projections.constructor(ParticipantsResponse.class,
                 QMember.member.id,
                 QMember.member.nickName,
-                QMember.member.profileImageUrl,
-                QGatheringParticipant.gatheringParticipant.captainStatus))
+                QMember.member.profileImageUrl))
             .from(QGatheringParticipant.gatheringParticipant)
             .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
             .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
@@ -108,7 +108,18 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             .limit(5)
             .fetch();
 
-        // 참가자 총 수 계산
+        boolean isCaptain = false;
+        if (email != null) {
+            isCaptain = Optional.ofNullable(queryFactory
+                    .select(QGatheringParticipant.gatheringParticipant.captainStatus)
+                    .from(QGatheringParticipant.gatheringParticipant)
+                    .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
+                    .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId())
+                        .and(QMember.member.email.eq(email)))
+                    .fetchOne())
+                .orElse(false);
+        }
+
         Long participantCount = queryFactory
             .select(QGatheringParticipant.gatheringParticipant.count())
             .from(QGatheringParticipant.gatheringParticipant)
@@ -148,6 +159,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             ).participants(recentParticipants)
             .rating(avgRating != null ? Math.round(avgRating) : 0)
             .guestBookCount(reviewCount)
+            .captainStatus(isCaptain)
             .build();
     }
 
