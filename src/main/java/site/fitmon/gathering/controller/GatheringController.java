@@ -17,7 +17,7 @@ import site.fitmon.gathering.service.GatheringService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/gatherings")
+@RequestMapping("/api/v1/gatherings")
 public class GatheringController implements GatheringsSwaggerController {
 
     private final GatheringService gatheringService;
