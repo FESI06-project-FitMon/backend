@@ -33,7 +33,7 @@ public interface ChallengeSwaggerController {
         )})
     ResponseEntity<ApiResponse> createChallenge(
         @Valid @RequestBody ChallengeCreateRequest request,
-        @PathVariable Long gatherId,
+        @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails);
 
 

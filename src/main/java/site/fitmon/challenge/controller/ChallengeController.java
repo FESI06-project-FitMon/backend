@@ -28,13 +28,13 @@ public class ChallengeController implements ChallengeSwaggerController {
 
     private final ChallengeService challengeService;
 
-    @PostMapping("/gatherings/{gatherId}/challenges")
+    @PostMapping("/gatherings/{gatheringId}/challenges")
     public ResponseEntity<ApiResponse> createChallenge(
         @Valid @RequestBody ChallengeCreateRequest request,
-        @PathVariable Long gatherId,
+        @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails) {
 
-        challengeService.createChallenge(request, gatherId, userDetails.getUsername());
+        challengeService.createChallenge(request, gatheringId, userDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.of("챌린지 생성 성공"));
