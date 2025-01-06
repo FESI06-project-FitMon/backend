@@ -63,7 +63,7 @@ public class GatheringController implements GatheringsSwaggerController {
         @RequestParam(required = false) String subLocation,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
         @RequestParam(defaultValue = "deadline") String sortBy,
-        @RequestParam(defaultValue = "DESC") String sortDirection,
+        @RequestParam(defaultValue = "ASC") String sortDirection,
         @RequestParam(value = "page", defaultValue = "0") int page
     ) {
 

@@ -68,10 +68,10 @@ public interface GatheringsSwaggerController {
         @RequestParam(required = false) String subLocation,
         @Parameter(description = "검색 날짜 (YYYY-MM-DD)")
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
-        @Parameter(description = "정렬 기준 (deadline, participants)")
+        @Parameter(description = "정렬 기준 (deadline, participants) / 마감 임박 -> deadline, ASC")
         @RequestParam(defaultValue = "deadline") String sortBy,
         @Parameter(description = "정렬 순서 (ASC, DESC)")
-        @RequestParam(defaultValue = "DESC") String sortDirection,
+        @RequestParam(defaultValue = "ASC") String sortDirection,
         @Parameter(description = "조회 시작 위치 (최소 0)")
         @RequestParam(value = "page", defaultValue = "0") int page
     );
