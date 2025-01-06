@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import site.fitmon.common.domain.RefreshTokenRepository;
 import site.fitmon.common.security.jwt.JwtAuthenticationFilter;
 import site.fitmon.common.security.jwt.JwtTokenProvider;
 
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,7 +59,8 @@ public class SecurityConfig {
             .sessionManagement(
                 sessionManagement ->
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, refreshTokenRepository),
+                UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(handling ->
                 handling.authenticationEntryPoint(authenticationEntryPoint))
             .build();
