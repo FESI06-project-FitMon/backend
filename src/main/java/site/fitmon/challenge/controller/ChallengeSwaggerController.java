@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.fitmon.challenge.dto.ChallengeCreateRequest;
+import site.fitmon.challenge.dto.ChallengeEvidenceRequest;
 import site.fitmon.common.dto.ApiResponse;
 
 @Tag(name = "챌린지 API", description = "챌린지 API")
@@ -46,7 +47,8 @@ public interface ChallengeSwaggerController {
             description = "잘못된 입력 값",
             content = {@Content()}
         )})
-    ResponseEntity<ApiResponse> verficateChallenge(
+    ResponseEntity<ApiResponse> verifyChallenge(
+        @Valid @RequestBody ChallengeEvidenceRequest request,
         @PathVariable Long challengeId,
         @AuthenticationPrincipal UserDetails userDetails);
 }
