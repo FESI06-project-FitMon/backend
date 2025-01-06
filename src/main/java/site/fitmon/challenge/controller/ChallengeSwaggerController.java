@@ -51,4 +51,20 @@ public interface ChallengeSwaggerController {
         @Valid @RequestBody ChallengeEvidenceRequest request,
         @PathVariable Long challengeId,
         @AuthenticationPrincipal UserDetails userDetails);
+
+    @Operation(summary = "챌린지 참가")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "201",
+            description = "챌린지 참가 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> joinChallenge(
+        @PathVariable Long challengeId,
+        @AuthenticationPrincipal UserDetails userDetails);
 }

@@ -5,8 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.domain.Challenge;
 import site.fitmon.challenge.domain.ChallengeEvidence;
+import site.fitmon.challenge.domain.ChallengeParticipant;
 import site.fitmon.challenge.dto.ChallengeCreateRequest;
+import site.fitmon.challenge.dto.ChallengeEvidenceRequest;
 import site.fitmon.challenge.repository.ChallengeEvidenceRepository;
+import site.fitmon.challenge.repository.ChallengeParticipantRepository;
 import site.fitmon.challenge.repository.ChallengeRepository;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
@@ -27,6 +30,7 @@ public class ChallengeService {
     private final GatheringParticipantRepository gatheringParticipantRepository;
     private final ChallengeRepository challengeRepository;
     private final ChallengeEvidenceRepository challengeEvidenceRepository;
+    private final ChallengeParticipantRepository challengeParticipantRepository;
 
     @Transactional
     public void createChallenge(ChallengeCreateRequest request, Long gatheringId, String email) {
@@ -57,18 +61,49 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void verifyChallenge(Long challengeId, String username) {
+    public void verifyChallenge(ChallengeEvidenceRequest request, Long challengeId, String username) {
         Member member = memberRepository.findByEmail(username)
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ApiException(ErrorCode.CHALLENGE_NOT_FOUND));
 
+        if (!challengeParticipantRepository.existsByChallengeAndMember(challenge, member)) {
+            throw new ApiException(ErrorCode.CHALLENGE_PARTICIPANT_NOT_FOUND);
+        }
+
         ChallengeEvidence evidence = ChallengeEvidence.builder()
+            .challenge(challenge)
+            .member(member)
+            .imageUrl(request.getImageUrl())
+            .build();
+
+        challengeEvidenceRepository.save(evidence);
+    }
+
+    @Transactional
+    public void joinChallenge(Long challengeId, String email) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ApiException(ErrorCode.CHALLENGE_NOT_FOUND));
+
+        Gathering gathering = challenge.getGathering();
+
+        gatheringParticipantRepository
+            .findByGatheringAndMember(gathering, member)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_PARTICIPANT_NOT_FOUND));
+
+        if (challengeParticipantRepository.existsByChallengeAndMember(challenge, member)) {
+            throw new ApiException(ErrorCode.ALREADY_JOINED_CHALLENGE);
+        }
+
+        ChallengeParticipant challengeParticipant = ChallengeParticipant.builder()
             .challenge(challenge)
             .member(member)
             .build();
 
-        challengeEvidenceRepository.save(evidence);
+        challengeParticipantRepository.save(challengeParticipant);
     }
 }
