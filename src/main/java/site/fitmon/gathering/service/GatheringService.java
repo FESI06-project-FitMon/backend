@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.domain.Challenge;
-import site.fitmon.challenge.dto.ChallengeCreateRequest;
+import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
 import site.fitmon.challenge.repository.ChallengeRepository;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;

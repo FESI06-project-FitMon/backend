@@ -12,7 +12,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.fitmon.challenge.dto.ChallengeCreateRequest;
+import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 

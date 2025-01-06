@@ -1,13 +1,16 @@
 package site.fitmon.challenge.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.domain.Challenge;
 import site.fitmon.challenge.domain.ChallengeEvidence;
 import site.fitmon.challenge.domain.ChallengeParticipant;
-import site.fitmon.challenge.dto.ChallengeCreateRequest;
-import site.fitmon.challenge.dto.ChallengeEvidenceRequest;
+import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
+import site.fitmon.challenge.dto.request.ChallengeEvidenceRequest;
+import site.fitmon.challenge.dto.response.PopularChallengeResponse;
 import site.fitmon.challenge.repository.ChallengeEvidenceRepository;
 import site.fitmon.challenge.repository.ChallengeParticipantRepository;
 import site.fitmon.challenge.repository.ChallengeRepository;
@@ -105,5 +108,9 @@ public class ChallengeService {
             .build();
 
         challengeParticipantRepository.save(challengeParticipant);
+    }
+
+    public List<PopularChallengeResponse> getPopularChallenges() {
+        return challengeRepository.findPopularChallenges(LocalDateTime.now());
     }
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,5 +41,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleS3Exception(S3Exception e) {
         ErrorResponse response = new ErrorResponse(IMAGE_UPLOAD_FAILED);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        ErrorResponse errorResponse = new ErrorResponse(INVALID_INPUT_VALUE);
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
     }
 }
