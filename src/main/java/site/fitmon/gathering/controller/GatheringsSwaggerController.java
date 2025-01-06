@@ -19,6 +19,7 @@ import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 
 @Tag(name = "모임 API", description = "모임 API")
@@ -74,4 +75,7 @@ public interface GatheringsSwaggerController {
         @Parameter(description = "조회 시작 위치 (최소 0)")
         @RequestParam(value = "page", defaultValue = "0") int page
     );
+
+    @Operation(summary = "모임 상세 조회", description = "특정 모임 상세 조회 / 평점 및 참여자 리스트 최대 5명을 불러 옵니다.")
+    ResponseEntity<GatheringDetailResponse> getGatheringDetail(@PathVariable Long gatheringId);
 }
