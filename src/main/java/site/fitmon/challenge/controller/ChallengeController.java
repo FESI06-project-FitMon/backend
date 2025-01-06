@@ -35,4 +35,14 @@ public class ChallengeController implements ChallengeSwaggerController {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.of("챌린지 생성 성공"));
     }
+
+    @PostMapping("/challenges/{challengeId}/verification")
+    public ResponseEntity<ApiResponse> verficateChallenge(
+        @PathVariable Long challengeId,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        challengeService.verifyChallenge(challengeId, userDetails.getUsername());
+
+        return ResponseEntity.ok(ApiResponse.of("챌린지 인증 성공"));
+    }
 }

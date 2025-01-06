@@ -22,7 +22,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.USER_NOT_FOUND);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.UNAUTHORIZED_CODE);
         response.setStatus(errorResponse.getStatus().value());
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));

@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.domain.Challenge;
+import site.fitmon.challenge.domain.ChallengeEvidence;
 import site.fitmon.challenge.dto.ChallengeCreateRequest;
+import site.fitmon.challenge.repository.ChallengeEvidenceRepository;
 import site.fitmon.challenge.repository.ChallengeRepository;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
@@ -24,6 +26,7 @@ public class ChallengeService {
     private final GatheringRepository gatheringRepository;
     private final GatheringParticipantRepository gatheringParticipantRepository;
     private final ChallengeRepository challengeRepository;
+    private final ChallengeEvidenceRepository challengeEvidenceRepository;
 
     @Transactional
     public void createChallenge(ChallengeCreateRequest request, Long gatheringId, String email) {
@@ -51,5 +54,21 @@ public class ChallengeService {
             .build();
 
         challengeRepository.save(challenge);
+    }
+
+    @Transactional
+    public void verifyChallenge(Long challengeId, String username) {
+        Member member = memberRepository.findByEmail(username)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ApiException(ErrorCode.CHALLENGE_NOT_FOUND));
+
+        ChallengeEvidence evidence = ChallengeEvidence.builder()
+            .challenge(challenge)
+            .member(member)
+            .build();
+
+        challengeEvidenceRepository.save(evidence);
     }
 }
