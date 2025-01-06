@@ -3,16 +3,21 @@ package site.fitmon.gathering.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.domain.Challenge;
 import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
 import site.fitmon.challenge.repository.ChallengeRepository;
+import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
 import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.domain.GatheringParticipant;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.request.GatheringSearchCondition;
+import site.fitmon.gathering.dto.response.GatheringResponse;
 import site.fitmon.gathering.repository.GatheringParticipantRepository;
 import site.fitmon.gathering.repository.GatheringRepository;
 import site.fitmon.member.domain.Member;
@@ -27,6 +32,7 @@ public class GatheringService {
     private final GatheringRepository gatheringRepository;
     private final GatheringParticipantRepository gatheringParticipantRepository;
     private final ChallengeRepository challengeRepository;
+    private final GatheringStatusService gatheringStatusService;
 
     @Transactional
     public void createGathering(GatheringCreateRequest request, String username) {
@@ -84,6 +90,17 @@ public class GatheringService {
             .build();
 
         gatheringParticipantRepository.save(gatheringParticipant);
+    }
+
+    @Transactional
+    public SliceResponse<GatheringResponse> searchGatherings(GatheringSearchCondition condition, Pageable pageable) {
+        gatheringStatusService.updateGatheringStatus();
+        Slice<GatheringResponse> slice = gatheringRepository.searchGatherings(condition, pageable);
+
+        return new SliceResponse<>(
+            slice.getContent(),
+            slice.hasNext()
+        );
     }
 
     private void createChallenges(List<ChallengeCreateRequest> challengeRequests, Gathering gathering) {
