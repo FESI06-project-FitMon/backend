@@ -15,6 +15,7 @@ import site.fitmon.gathering.domain.SubType;
 public class GatheringDetailResponse {
 
     private Long gatheringId;
+    private boolean captainStatus;
     private String title;
     private String description;
     private MainType mainType;
@@ -34,12 +35,14 @@ public class GatheringDetailResponse {
     private Long guestBookCount;
 
     @Builder
-    public GatheringDetailResponse(Long gatheringId, String title, String description, MainType mainType,
+    public GatheringDetailResponse(Long gatheringId, boolean captainStatus, String title, String description,
+        MainType mainType,
         SubType subType,
         String imageUrl, LocalDateTime startDate, LocalDateTime endDate, String mainLocation, String subLocation,
         Integer minCount, Integer totalCount, Long participantCount, GatheringStatus status, List<String> tags,
         List<ParticipantsResponse> participants, Long rating, Long guestBookCount) {
         this.gatheringId = gatheringId;
+        this.captainStatus = captainStatus;
         this.title = title;
         this.description = description;
         this.mainType = mainType;

@@ -84,9 +84,11 @@ public class GatheringController implements GatheringsSwaggerController {
 
     @GetMapping("/{gatheringId}")
     public ResponseEntity<GatheringDetailResponse> getGatheringDetail(
-        @PathVariable Long gatheringId
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId));
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId, email));
     }
 
 }

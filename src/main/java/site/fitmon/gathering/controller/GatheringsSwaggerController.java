@@ -77,5 +77,7 @@ public interface GatheringsSwaggerController {
     );
 
     @Operation(summary = "모임 상세 조회", description = "특정 모임 상세 조회 / 평점 및 참여자 리스트 최대 5명을 불러 옵니다.")
-    ResponseEntity<GatheringDetailResponse> getGatheringDetail(@PathVariable Long gatheringId);
+    ResponseEntity<GatheringDetailResponse> getGatheringDetail(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal UserDetails userDetails);
 }

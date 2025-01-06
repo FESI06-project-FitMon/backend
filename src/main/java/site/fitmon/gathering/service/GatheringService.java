@@ -153,9 +153,9 @@ public class GatheringService {
         }
     }
 
-    public GatheringDetailResponse getGatheringDetail(Long gatheringId) {
+    public GatheringDetailResponse getGatheringDetail(Long gatheringId, String email) {
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
-        return gatheringRepository.findGatheringDetail(gathering);
+        return gatheringRepository.findGatheringDetail(gathering, email);
     }
 }
