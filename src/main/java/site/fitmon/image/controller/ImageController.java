@@ -14,7 +14,7 @@ import site.fitmon.image.service.S3Service;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/images")
+@RequestMapping("/api/v1/images")
 public class ImageController implements ImageSwaggerController {
 
     private final S3Service s3Service;
