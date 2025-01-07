@@ -18,7 +18,7 @@ import site.fitmon.review.service.ReviewService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class ReviewController {
+public class ReviewController implements ReviewSwaggerController {
 
     private final ReviewService reviewService;
 
