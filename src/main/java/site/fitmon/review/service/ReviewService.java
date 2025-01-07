@@ -1,10 +1,14 @@
 package site.fitmon.review.service;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.repository.ChallengeEvidenceRepository;
+import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
 import site.fitmon.gathering.domain.Gathering;
@@ -15,6 +19,7 @@ import site.fitmon.member.domain.Member;
 import site.fitmon.member.repository.MemberRepository;
 import site.fitmon.review.domain.Review;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
+import site.fitmon.review.dto.response.GatheringReviewsResponse;
 import site.fitmon.review.repository.ReviewRepository;
 
 @Service
@@ -69,4 +74,26 @@ public class ReviewService {
         return challengeEvidenceRepository.hasEvidenceInGathering(member, gathering);
     }
 
+    public SliceResponse<GatheringReviewsResponse> getGatheringReviews(Long gatheringId, String email,
+        PageRequest pageable) {
+        final Long currentMemberId = email != null ?
+            memberRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND))
+                .getId()
+            : null;
+        Gathering findedGathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+
+        Slice<Review> slice = reviewRepository.findAllWithMemberByGatheringId(
+            findedGathering.getId(), pageable);
+
+        List<GatheringReviewsResponse> response = slice.getContent().stream()
+            .map(review -> new GatheringReviewsResponse(review, currentMemberId))
+            .toList();
+
+        return new SliceResponse<>(
+            response,
+            slice.hasNext()
+        );
+    }
 }
