@@ -45,7 +45,15 @@ public enum ErrorCode {
     INVALID_CHALLENGE_DATE_RANGE(BAD_REQUEST, "챌린지 시작일은 챌린지 종료일 이전이어야 합니다."),
     CHALLENGE_NOT_FOUND(BAD_REQUEST, "해당 챌린지를 찾을 수 없습니다."),
     ALREADY_JOINED_CHALLENGE(BAD_REQUEST, "이미 참여한 챌린지입니다."),
-    CHALLENGE_PARTICIPANT_NOT_FOUND(BAD_REQUEST, "해당 챌린지의 참여자가 아닙니다.");
+    CHALLENGE_PARTICIPANT_NOT_FOUND(BAD_REQUEST, "해당 챌린지의 참여자가 아닙니다."),
+
+    //Review
+    ALREADY_WROTE_REVIEW(BAD_REQUEST, "이미 리뷰를 작성하셨습니다."),
+    CAPTAIN_CANNOT_WRITE_REVIEW(BAD_REQUEST, "모임장은 리뷰를 작성할 수 없습니다."),
+    INVALID_REVIEW_CONDITION(BAD_REQUEST, "모임이 종료되었거나 챌린지 인증을 한 경우에만 리뷰를 작성할 수 있습니다."),
+    NOT_GATHERING_PARTICIPANT(BAD_REQUEST, "모임 참여자만 리뷰를 작성할 수 있습니다."),
+    REVIEW_NOT_FOUND(BAD_REQUEST, "해당 리뷰를 찾을 수 없습니다."),
+    INVALID_RATING_RANGE(BAD_REQUEST, "별점은 1에서 5 사이여야 합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
