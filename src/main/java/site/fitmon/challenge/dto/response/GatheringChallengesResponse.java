@@ -1,5 +1,6 @@
 package site.fitmon.challenge.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,6 @@ public class GatheringChallengesResponse {
     private long successParticipantCount;
     private boolean participantStatus;
     private boolean verificationStatus;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }
