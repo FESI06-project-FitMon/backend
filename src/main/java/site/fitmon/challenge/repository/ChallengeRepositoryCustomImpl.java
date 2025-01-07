@@ -81,7 +81,9 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
                             )
                         : Expressions.constant(false),
                     "verificationStatus"
-                )
+                ),
+                challenge.startDate,
+                challenge.endDate
             ))
             .from(challenge)
             .where(

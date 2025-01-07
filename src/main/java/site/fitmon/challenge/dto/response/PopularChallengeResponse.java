@@ -1,5 +1,6 @@
 package site.fitmon.challenge.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,4 +15,6 @@ public class PopularChallengeResponse {
     private String imageUrl;
     private long participantCount;
     private long successParticipantCount;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }
