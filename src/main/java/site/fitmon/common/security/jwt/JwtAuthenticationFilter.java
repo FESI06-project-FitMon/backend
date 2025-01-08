@@ -105,7 +105,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             Member member = refreshTokenEntity.getMember();
             String newAccessToken = jwtTokenProvider.createAccessToken(member.getId(), member.getEmail());
-            response.setHeader("Authorization", "Bearer " + newAccessToken);
+
+            Cookie accessTokenCookie = new Cookie("access_token", newAccessToken);
+            accessTokenCookie.setHttpOnly(true);
+            accessTokenCookie.setSecure(true);
+            accessTokenCookie.setPath("/");
+            accessTokenCookie.setMaxAge(60 * 60);
+            response.addCookie(accessTokenCookie);
+
             setAuthentication(newAccessToken);
 
         } catch (ApiException e) {
@@ -121,7 +128,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Cookie refreshTokenCookie = new Cookie("refresh_token", null);
             refreshTokenCookie.setMaxAge(0);
             refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(true);
             response.addCookie(refreshTokenCookie);
+
+            Cookie accessTokenCookie = new Cookie("access_token", null);
+            accessTokenCookie.setMaxAge(0);
+            accessTokenCookie.setPath("/");
+            accessTokenCookie.setHttpOnly(true);
+            accessTokenCookie.setSecure(true);
+            response.addCookie(accessTokenCookie);
 
             SecurityContextHolder.clearContext();
 
@@ -134,11 +150,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        Cookie accessTokenCookie = WebUtils.getCookie(request, "access_token");
+        return accessTokenCookie != null ? accessTokenCookie.getValue() : null;
     }
 
     private void setAuthentication(String token) {
