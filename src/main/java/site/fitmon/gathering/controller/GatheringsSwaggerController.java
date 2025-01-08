@@ -21,6 +21,7 @@ import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.request.GatheringModifyRequest;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
@@ -87,4 +88,22 @@ public interface GatheringsSwaggerController {
     @Operation(summary = "특정 모임 상태 조회", description = "특정 모임 상태 조회")
     @GetMapping("/{gatheringId}/status")
     ResponseEntity<GatheringDetailStatusResponse> getGatheringDetailStatus(@PathVariable Long gatheringId);
+
+    @Operation(summary = "모임 수정", security = { @SecurityRequirement(name = "cookieAuth") })
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "201",
+            description = "모임 수정 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> modifyGathering(
+        @Valid @RequestBody GatheringModifyRequest request,
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal UserDetails userDetails
+    );
 }
