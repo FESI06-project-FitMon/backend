@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
+import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 
 @Repository
@@ -14,4 +15,6 @@ public interface GatheringRepositoryCustom {
     Slice<GatheringResponse> searchGatherings(GatheringSearchCondition condition, Pageable pageable);
 
     GatheringDetailResponse findGatheringDetail(Gathering gathering, String email);
+
+    GatheringDetailStatusResponse findGatheringDetailStatus(Gathering gathering);
 }

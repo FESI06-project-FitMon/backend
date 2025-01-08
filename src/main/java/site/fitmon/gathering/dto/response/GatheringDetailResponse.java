@@ -31,7 +31,7 @@ public class GatheringDetailResponse {
     private GatheringStatus status;
     private List<String> tags;
     private List<ParticipantsResponse> participants;
-    private Long rating;
+    private Double averageRating;
     private Long guestBookCount;
 
     @Builder
@@ -40,7 +40,7 @@ public class GatheringDetailResponse {
         SubType subType,
         String imageUrl, LocalDateTime startDate, LocalDateTime endDate, String mainLocation, String subLocation,
         Integer minCount, Integer totalCount, Long participantCount, GatheringStatus status, List<String> tags,
-        List<ParticipantsResponse> participants, Long rating, Long guestBookCount) {
+        List<ParticipantsResponse> participants, Double averageRating, Long guestBookCount) {
         this.gatheringId = gatheringId;
         this.captainStatus = captainStatus;
         this.title = title;
@@ -58,7 +58,7 @@ public class GatheringDetailResponse {
         this.status = status;
         this.tags = tags;
         this.participants = participants;
-        this.rating = rating;
+        this.averageRating = averageRating;
         this.guestBookCount = guestBookCount;
     }
 }

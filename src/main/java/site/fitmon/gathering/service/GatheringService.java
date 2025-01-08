@@ -18,6 +18,7 @@ import site.fitmon.gathering.domain.GatheringParticipant;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
+import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 import site.fitmon.gathering.repository.GatheringParticipantRepository;
 import site.fitmon.gathering.repository.GatheringRepository;
@@ -157,5 +158,11 @@ public class GatheringService {
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
         return gatheringRepository.findGatheringDetail(gathering, email);
+    }
+
+    public GatheringDetailStatusResponse getGatheringDetailStatus(Long gatheringId) {
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+        return gatheringRepository.findGatheringDetailStatus(gathering);
     }
 }

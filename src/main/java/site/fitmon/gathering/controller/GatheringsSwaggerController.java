@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
+import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 
 @Tag(name = "모임 API", description = "모임 API")
@@ -80,4 +82,8 @@ public interface GatheringsSwaggerController {
     ResponseEntity<GatheringDetailResponse> getGatheringDetail(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails);
+
+    @Operation(summary = "특정 모임 상태 조회", description = "특정 모임 상태 조회")
+    @GetMapping("/{gatheringId}/status")
+    ResponseEntity<GatheringDetailStatusResponse> getGatheringDetailStatus(@PathVariable Long gatheringId);
 }
