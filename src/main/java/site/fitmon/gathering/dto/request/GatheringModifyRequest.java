@@ -20,7 +20,6 @@ import site.fitmon.gathering.domain.SubType;
 public class GatheringModifyRequest {
 
     @Schema(description = "수정할 모임 제목", example = "3대 600이 되어 보아요")
-    @NotNull(message = "제목은 필수 입력 값입니다.")
     private String title;
 
     @Schema(description = "모임 상세", example = "근 성장에 진심입니다.")
@@ -28,11 +27,9 @@ public class GatheringModifyRequest {
     private String description;
 
     @Schema(description = "모임 메인 카테고리", example = "헬스형")
-    @NotNull(message = "메인 카테고리는 필수 입력 값입니다.")
     private MainType mainType;
 
     @Schema(description = "모임 서브 카테고리", example = "헬스")
-    @NotNull(message = "서브 카테고리는 필수 입력 값입니다.")
     private SubType subType;
 
     @Schema(description = "모임 대표 이미지 URL", example = "https://fitmon-bucket.s3.amazonaws.com/gatherings/af61233a-ed83-432c-b685-1d29a6c75de1_whale.jpg")
@@ -47,11 +44,9 @@ public class GatheringModifyRequest {
     private LocalDateTime endDate;
 
     @Schema(description = "모임 메인 장소", example = "서울시")
-    @NotNull(message = "메인 장소는 필수 입력 값입니다.")
     private String mainLocation;
 
     @Schema(description = "모임 상세 장소", example = "송파구")
-    @NotNull(message = "상세 장소는 필수 입력 값입니다.")
     private String subLocation;
 
     @Schema(description = "모임 최대 인원", example = "15")
