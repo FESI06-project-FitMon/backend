@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.request.GatheringModifyRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
@@ -95,5 +97,16 @@ public class GatheringController implements GatheringsSwaggerController {
     @GetMapping("/{gatheringId}/status")
     public ResponseEntity<GatheringDetailStatusResponse> getGatheringDetailStatus(@PathVariable Long gatheringId) {
         return ResponseEntity.ok(gatheringService.getGatheringDetailStatus(gatheringId));
+    }
+
+    @PatchMapping("/{gatheringId}")
+    public ResponseEntity<ApiResponse> modifyGathering(
+        @Valid @RequestBody GatheringModifyRequest request,
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        gatheringService.modifyGathering(request, gatheringId, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.of("모임 수정 완료"));
     }
 }

@@ -1,5 +1,6 @@
 package site.fitmon.gathering.service;
 
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import site.fitmon.common.exception.ErrorCode;
 import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.domain.GatheringParticipant;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.request.GatheringModifyRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
@@ -164,5 +166,24 @@ public class GatheringService {
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
         return gatheringRepository.findGatheringDetailStatus(gathering);
+    }
+
+    @Transactional
+    public void modifyGathering(@Valid GatheringModifyRequest request, Long gatheringId, String email) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+
+        GatheringParticipant participant = gatheringParticipantRepository.findByGatheringAndMember(gathering,
+                member)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_PARTICIPANT_NOT_FOUND));
+
+        if (!participant.isCaptainStatus()) {
+            throw new ApiException(ErrorCode.GATHERING_NOT_CAPTAIN);
+        }
+
+        gathering.update(request);
     }
 }

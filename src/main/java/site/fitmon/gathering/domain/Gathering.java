@@ -22,6 +22,7 @@ import org.hibernate.annotations.SQLDelete;
 import site.fitmon.common.domain.BaseEntity;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
+import site.fitmon.gathering.dto.request.GatheringModifyRequest;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -94,6 +95,45 @@ public class Gathering extends BaseEntity {
         this.minCount = minCount;
         this.status = GatheringStatus.시작전;
         setTags(tags);
+    }
+
+    public void update(GatheringModifyRequest request) {
+        if (request.getTitle() != null) {
+            this.title = request.getTitle();
+        }
+        if (request.getDescription() != null) {
+            this.description = request.getDescription();
+        }
+        if (request.getMainType() != null) {
+            this.mainType = request.getMainType();
+        }
+        if (request.getSubType() != null) {
+            this.subType = request.getSubType();
+        }
+        if (request.getImageUrl() != null) {
+            this.imageUrl = request.getImageUrl();
+        }
+        if (request.getStartDate() != null) {
+            this.startDate = request.getStartDate();
+        }
+        if (request.getEndDate() != null) {
+            this.endDate = request.getEndDate();
+        }
+        if (request.getMainLocation() != null) {
+            this.mainLocation = request.getMainLocation();
+        }
+        if (request.getSubLocation() != null) {
+            this.subLocation = request.getSubLocation();
+        }
+        if (request.getTotalCount() > 0) {
+            this.totalCount = request.getTotalCount();
+        }
+        if (request.getMinCount() > 0) {
+            this.minCount = request.getMinCount();
+        }
+        if (request.getTags() != null) {
+            setTags(request.getTags());
+        }
     }
 
     public void setTags(List<String> tagList) {
