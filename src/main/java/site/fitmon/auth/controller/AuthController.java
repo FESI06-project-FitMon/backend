@@ -41,7 +41,14 @@ public class AuthController implements AuthSwaggerController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request,
         HttpServletResponse response) {
         TokenResponse tokenResponse = authService.login(request);
-        response.addHeader("Authorization", "Bearer " + tokenResponse.getAccessToken());
+
+        Cookie accessTokenCookie = new Cookie("access_token", tokenResponse.getAccessToken());
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(60 * 60);
+        response.addCookie(accessTokenCookie);
+
         Cookie refreshTokenCookie = new Cookie("refresh_token", tokenResponse.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
@@ -54,16 +61,44 @@ public class AuthController implements AuthSwaggerController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            authService.logout(jwtTokenProvider.getEmail(token.substring(7)));
+        try {
+            String accessToken = null;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("access_token".equals(cookie.getName())) {
+                        accessToken = cookie.getValue();
+                        break;
+                    }
+                }
+
+                if (accessToken != null) {
+                    try {
+                        if (jwtTokenProvider.validateToken(accessToken)) {
+                            String email = jwtTokenProvider.getEmail(accessToken);
+                            authService.logout(email);
+                        }
+                    } catch (Exception e) {
+                        log.warn("Invalid token during logout", e);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error during logout", e);
+        } finally {
+            deleteCookie(response, "access_token");
+            deleteCookie(response, "refresh_token");
         }
 
-        Cookie refreshTokenCookie = new Cookie("refresh_token", null);
-        refreshTokenCookie.setMaxAge(0);
-        refreshTokenCookie.setPath("/");
-        response.addCookie(refreshTokenCookie);
-
         return ResponseEntity.ok().build();
+    }
+
+    private void deleteCookie(HttpServletResponse response, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
     }
 }
