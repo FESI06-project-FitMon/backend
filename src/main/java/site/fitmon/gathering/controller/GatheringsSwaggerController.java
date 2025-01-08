@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ import site.fitmon.gathering.dto.response.GatheringResponse;
 @Tag(name = "모임 API", description = "모임 API")
 public interface GatheringsSwaggerController {
 
-    @Operation(summary = "모임 생성")
+    @Operation(summary = "모임 생성", security = { @SecurityRequirement(name = "cookieAuth") })
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "201",
