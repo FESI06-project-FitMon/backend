@@ -23,6 +23,7 @@ import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
+import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 import site.fitmon.gathering.service.GatheringService;
 
@@ -91,4 +92,8 @@ public class GatheringController implements GatheringsSwaggerController {
         return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId, email));
     }
 
+    @GetMapping("/{gatheringId}/status")
+    public ResponseEntity<GatheringDetailStatusResponse> getGatheringDetailStatus(@PathVariable Long gatheringId) {
+        return ResponseEntity.ok(gatheringService.getGatheringDetailStatus(gatheringId));
+    }
 }

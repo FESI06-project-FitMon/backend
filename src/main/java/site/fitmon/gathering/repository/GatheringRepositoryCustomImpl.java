@@ -10,6 +10,8 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,6 +33,7 @@ import site.fitmon.gathering.domain.QGatheringParticipant;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
+import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
 import site.fitmon.gathering.dto.response.GatheringResponse;
 import site.fitmon.gathering.dto.response.ParticipantsResponse;
 import site.fitmon.member.domain.QMember;
@@ -96,17 +99,8 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
     }
 
     public GatheringDetailResponse findGatheringDetail(Gathering gathering, String email) {
-        List<ParticipantsResponse> recentParticipants = queryFactory
-            .select(Projections.constructor(ParticipantsResponse.class,
-                QMember.member.id,
-                QMember.member.nickName,
-                QMember.member.profileImageUrl))
-            .from(QGatheringParticipant.gatheringParticipant)
-            .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
-            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
-            .orderBy(QGatheringParticipant.gatheringParticipant.createdAt.desc())
-            .limit(5)
-            .fetch();
+        List<ParticipantsResponse> recentParticipants = getRecentParticipants(
+            gathering);
 
         boolean isCaptain = false;
         if (email != null) {
@@ -119,18 +113,6 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                     .fetchOne())
                 .orElse(false);
         }
-
-        Long participantCount = queryFactory
-            .select(QGatheringParticipant.gatheringParticipant.count())
-            .from(QGatheringParticipant.gatheringParticipant)
-            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
-            .fetchOne();
-
-        Double avgRating = queryFactory
-            .select(QReview.review.rating.avg())
-            .from(QReview.review)
-            .where(QReview.review.gathering.id.eq(gathering.getId()))
-            .fetchOne();
 
         Long reviewCount = queryFactory
             .select(QReview.review.count())
@@ -151,16 +133,75 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             .subLocation(gathering.getSubLocation())
             .minCount(gathering.getMinCount())
             .totalCount(gathering.getTotalCount())
-            .participantCount(participantCount)
+            .participantCount(getParticipantCount(gathering))
             .status(gathering.getStatus())
             .tags(((gathering.getTags() != null ?
                 Arrays.asList(gathering.getTags().split(",")) :
                 Collections.emptyList()))
             ).participants(recentParticipants)
-            .rating(avgRating != null ? Math.round(avgRating) : 0)
+            .averageRating(getAvgRating(gathering) != null ?
+                BigDecimal.valueOf(getAvgRating(gathering)).setScale(1, RoundingMode.HALF_UP).doubleValue() :
+                0.0)
             .guestBookCount(reviewCount)
             .captainStatus(isCaptain)
             .build();
+    }
+
+    private Double getAvgRating(Gathering gathering) {
+        Double avgRating = queryFactory
+            .select(QReview.review.rating.avg())
+            .from(QReview.review)
+            .where(QReview.review.gathering.id.eq(gathering.getId()))
+            .fetchOne();
+        return avgRating;
+    }
+
+    private List<ParticipantsResponse> getRecentParticipants(Gathering gathering) {
+        List<ParticipantsResponse> recentParticipants = queryFactory
+            .select(Projections.constructor(ParticipantsResponse.class,
+                QMember.member.id,
+                QMember.member.nickName,
+                QMember.member.profileImageUrl))
+            .from(QGatheringParticipant.gatheringParticipant)
+            .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
+            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
+            .orderBy(QGatheringParticipant.gatheringParticipant.createdAt.desc())
+            .limit(5)
+            .fetch();
+        return recentParticipants;
+    }
+
+    @Override
+    public GatheringDetailStatusResponse findGatheringDetailStatus(Gathering gathering) {
+        List<ParticipantsResponse> recentParticipants = getRecentParticipants(
+            gathering);
+
+        Long reviewCount = queryFactory
+            .select(QReview.review.count())
+            .from(QReview.review)
+            .where(QReview.review.gathering.id.eq(gathering.getId()))
+            .fetchOne();
+
+        return GatheringDetailStatusResponse.builder()
+            .participants(recentParticipants)
+            .minCount(gathering.getMinCount())
+            .totalCount(gathering.getTotalCount())
+            .participantCount(getParticipantCount(gathering))
+            .status(gathering.getStatus())
+            .averageRating(getAvgRating(gathering) != null ?
+                BigDecimal.valueOf(getAvgRating(gathering)).setScale(1, RoundingMode.HALF_UP).doubleValue() :
+                0.0)
+            .guestBookCount(reviewCount)
+            .build();
+    }
+
+    private Long getParticipantCount(Gathering gathering) {
+        Long participantCount = queryFactory
+            .select(QGatheringParticipant.gatheringParticipant.count())
+            .from(QGatheringParticipant.gatheringParticipant)
+            .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId()))
+            .fetchOne();
+        return participantCount;
     }
 
     private OrderSpecifier<?>[] createOrderSpecifiers(String sortBy, String direction,
