@@ -104,7 +104,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .orElseThrow(() -> new ApiException(ErrorCode.INVALID_TOKEN));
 
             Member member = refreshTokenEntity.getMember();
-            String newAccessToken = jwtTokenProvider.createAccessToken(member.getId(), member.getEmail());
+            String newAccessToken = jwtTokenProvider.createAccessToken(member.getId());
 
             Cookie accessTokenCookie = new Cookie("access_token", newAccessToken);
             accessTokenCookie.setHttpOnly(true);
@@ -155,10 +155,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(String token) {
-        String email = jwtTokenProvider.getEmail(token);
-        Member member = Member.builder()
-            .email(email)
-            .build();
+        Long memberId = jwtTokenProvider.getId(token);
+        Member member = new Member(memberId);
+
         CustomUserDetails customUserDetails = new CustomUserDetails(member);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             customUserDetails, null, customUserDetails.getAuthorities());

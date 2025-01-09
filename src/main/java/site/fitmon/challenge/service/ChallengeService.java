@@ -41,8 +41,8 @@ public class ChallengeService {
     private final ChallengeParticipantRepository challengeParticipantRepository;
 
     @Transactional
-    public void createChallenge(ChallengeCreateRequest request, Long gatheringId, String email) {
-        Member member = memberRepository.findByEmail(email)
+    public void createChallenge(ChallengeCreateRequest request, Long gatheringId, String memberId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         Gathering gathering = gatheringRepository.findById(gatheringId)
@@ -69,8 +69,8 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void verifyChallenge(ChallengeEvidenceRequest request, Long challengeId, String username) {
-        Member member = memberRepository.findByEmail(username)
+    public void verifyChallenge(ChallengeEvidenceRequest request, Long challengeId, String memberId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         Challenge challenge = challengeRepository.findById(challengeId)
@@ -90,8 +90,8 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void joinChallenge(Long challengeId, String email) {
-        Member member = memberRepository.findByEmail(email)
+    public void joinChallenge(Long challengeId, String memberId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         Challenge challenge = challengeRepository.findById(challengeId)
@@ -122,11 +122,11 @@ public class ChallengeService {
     public SliceResponse<GatheringChallengesResponse> getGatheringChallenges(
         ChallengeSearchCondition condition,
         Long gatheringId,
-        String email,
+        String memberId,
         Pageable pageable
     ) {
         Slice<GatheringChallengesResponse> slice = challengeRepository.getGatheringChallenges(gatheringId,
-            email, condition, pageable);
+            Long.valueOf(memberId), condition, pageable);
         return new SliceResponse<>(
             slice.getContent(),
             slice.hasNext()

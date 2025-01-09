@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
 import site.fitmon.challenge.dto.request.ChallengeEvidenceRequest;
 import site.fitmon.challenge.dto.request.ChallengeSearchCondition;
@@ -40,7 +40,7 @@ public class ChallengeController implements ChallengeSwaggerController {
     public ResponseEntity<ApiResponse> createChallenge(
         @Valid @RequestBody ChallengeCreateRequest request,
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         challengeService.createChallenge(request, gatheringId, userDetails.getUsername());
 
@@ -52,7 +52,7 @@ public class ChallengeController implements ChallengeSwaggerController {
     public ResponseEntity<ApiResponse> verifyChallenge(
         @Valid @RequestBody ChallengeEvidenceRequest request,
         @PathVariable Long challengeId,
-        @AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         challengeService.verifyChallenge(request, challengeId, userDetails.getUsername());
 
@@ -62,7 +62,7 @@ public class ChallengeController implements ChallengeSwaggerController {
     @PostMapping("/challenges/{challengeId}/participants")
     public ResponseEntity<ApiResponse> joinChallenge(
         @PathVariable Long challengeId,
-        @AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         challengeService.joinChallenge(challengeId, userDetails.getUsername());
 
@@ -79,7 +79,7 @@ public class ChallengeController implements ChallengeSwaggerController {
     public ResponseEntity<SliceResponse<GatheringChallengesResponse>> getGatheringChallenges(
         @RequestParam(required = false) ChallengeStatus status,
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int pageSize) {
 

@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.fitmon.auth.dto.request.LoginRequest;
 import site.fitmon.auth.dto.request.SignupRequest;
-import site.fitmon.auth.dto.response.TokenResponse;
 import site.fitmon.auth.dto.response.LoginResponse;
+import site.fitmon.auth.dto.response.TokenResponse;
 import site.fitmon.auth.service.AuthService;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.security.jwt.JwtTokenProvider;
@@ -56,7 +56,7 @@ public class AuthController implements AuthSwaggerController {
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshTokenCookie);
 
-        return ResponseEntity.ok(LoginResponse.of(tokenResponse.getMemberId(), tokenResponse.getEmail()));
+        return ResponseEntity.ok(LoginResponse.of(tokenResponse.getMemberId(), tokenResponse.getNickName(), tokenResponse.getEmail(), tokenResponse.getProfileImageUrl()));
     }
 
     @PostMapping("/logout")
@@ -75,8 +75,8 @@ public class AuthController implements AuthSwaggerController {
                 if (accessToken != null) {
                     try {
                         if (jwtTokenProvider.validateToken(accessToken)) {
-                            String email = jwtTokenProvider.getEmail(accessToken);
-                            authService.logout(email);
+                            Long memberId = jwtTokenProvider.getId(accessToken);
+                            authService.logout(memberId);
                         }
                     } catch (Exception e) {
                         log.warn("Invalid token during logout", e);

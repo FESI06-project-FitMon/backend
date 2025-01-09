@@ -7,11 +7,14 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import site.fitmon.common.exception.ApiException;
+import site.fitmon.common.exception.ErrorCode;
 
 @Slf4j
 @Component
@@ -31,12 +34,10 @@ public class JwtTokenProvider {
                 secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String getEmail(String token) {
-        return getClaims(token).getSubject();
-    }
-
     public Long getId(String token) {
-        return getClaims(token).get("id", Long.class);
+        Claims claims = getClaims(token);
+        return Optional.ofNullable(claims.get("id", Long.class))
+            .orElseThrow(() -> new ApiException(ErrorCode.INVALID_TOKEN));
     }
 
     private Claims getClaims(String token) {
@@ -66,20 +67,19 @@ public class JwtTokenProvider {
         return false;
     }
 
-    public String createAccessToken(Long id, String email) {
-        return createToken(id, email, accessTokenValidity);
+    public String createAccessToken(Long id) {
+        return createToken(id, accessTokenValidity);
     }
 
-    public String createRefreshToken(Long id, String email) {
-        return createToken(id, email, refreshTokenValidity);
+    public String createRefreshToken(Long id) {
+        return createToken(id, refreshTokenValidity);
     }
 
-    private String createToken(Long id, String email, long validityInSeconds) {
+    private String createToken(Long id, long validityInSeconds) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInSeconds * 1000);
 
         return Jwts.builder()
-            .subject(email)
             .claim("id", id)
             .issuedAt(now)
             .expiration(validity)

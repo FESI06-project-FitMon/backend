@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
@@ -34,13 +34,13 @@ public interface ReviewSwaggerController {
         )})
     ResponseEntity<ApiResponse> createReview(
         @Valid @RequestBody ReviewCreateRequest request,
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long gatheringId);
 
     @Operation(summary = "특정 모임의 방명록 리스트를 조회", description = "특정 모임의 방명록 리스트를 조회 합니다. 무한스크롤로 10개씩 받아 옵니다.")
     ResponseEntity<SliceResponse<GatheringReviewsResponse>> getGatheringReviews(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(defaultValue = "0") int page,
         @Parameter(description = "한번에 조회해 올 사이즈")
         @RequestParam int pageSize

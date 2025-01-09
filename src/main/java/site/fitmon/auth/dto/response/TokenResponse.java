@@ -9,5 +9,7 @@ public class TokenResponse {
     private String accessToken;
     private String refreshToken;
     private Long memberId;
+    private String nickName;
     private String email;
+    private String profileImageUrl;
 }

@@ -39,8 +39,8 @@ public class GatheringService {
     private final GatheringStatusService gatheringStatusService;
 
     @Transactional
-    public void createGathering(GatheringCreateRequest request, String username) {
-        Member member = validateMember(username);
+    public void createGathering(GatheringCreateRequest request, String memberId) {
+        Member member = validateMember(memberId);
 
         validateDateRange(request.getStartDate(), request.getEndDate());
 
@@ -75,8 +75,8 @@ public class GatheringService {
     }
 
     @Transactional
-    public void joinGathering(Long gathering, String email) {
-        Member member = validateMember(email);
+    public void joinGathering(Long gathering, String memberId) {
+        Member member = validateMember(memberId);
 
         Gathering foundGathering = gatheringRepository.findById(gathering)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
@@ -154,10 +154,10 @@ public class GatheringService {
         }
     }
 
-    public GatheringDetailResponse getGatheringDetail(Long gatheringId, String email) {
+    public GatheringDetailResponse getGatheringDetail(Long gatheringId, String memberId) {
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
-        return gatheringRepository.findGatheringDetail(gathering, email);
+        return gatheringRepository.findGatheringDetail(gathering, Long.valueOf(memberId));
     }
 
     public GatheringDetailStatusResponse getGatheringDetailStatus(Long gatheringId) {
@@ -167,8 +167,8 @@ public class GatheringService {
     }
 
     @Transactional
-    public void modifyGathering(@Valid GatheringModifyRequest request, Long gatheringId, String email) {
-        Member member = validateMember(email);
+    public void modifyGathering(@Valid GatheringModifyRequest request, Long gatheringId, String memberId) {
+        Member member = validateMember(memberId);
 
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
@@ -185,8 +185,8 @@ public class GatheringService {
     }
 
     @Transactional
-    public void deleteGathering(Long gatheringId, String email) {
-        Member member = validateMember(email);
+    public void deleteGathering(Long gatheringId, String memberId) {
+        Member member = validateMember(memberId);
 
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
@@ -202,8 +202,8 @@ public class GatheringService {
         gathering.cancel();
     }
 
-    private Member validateMember(String email) {
-        return memberRepository.findByEmail(email)
+    private Member validateMember(String id) {
+        return memberRepository.findById(Long.valueOf(id))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     }
 }
