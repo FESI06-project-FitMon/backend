@@ -1,6 +1,7 @@
 package site.fitmon.review.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +41,8 @@ public interface ReviewSwaggerController {
     ResponseEntity<SliceResponse<GatheringReviewsResponse>> getGatheringReviews(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestParam(defaultValue = "0") int page
+        @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "한번에 조회해 올 사이즈")
+        @RequestParam int pageSize
     );
 }
