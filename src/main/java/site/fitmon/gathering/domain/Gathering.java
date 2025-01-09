@@ -104,12 +104,6 @@ public class Gathering extends BaseEntity {
         if (request.getDescription() != null) {
             this.description = request.getDescription();
         }
-        if (request.getMainType() != null) {
-            this.mainType = request.getMainType();
-        }
-        if (request.getSubType() != null) {
-            this.subType = request.getSubType();
-        }
         if (request.getImageUrl() != null) {
             this.imageUrl = request.getImageUrl();
         }
@@ -124,12 +118,6 @@ public class Gathering extends BaseEntity {
         }
         if (request.getSubLocation() != null) {
             this.subLocation = request.getSubLocation();
-        }
-        if (request.getTotalCount() > 0) {
-            this.totalCount = request.getTotalCount();
-        }
-        if (request.getMinCount() > 0) {
-            this.minCount = request.getMinCount();
         }
         if (request.getTags() != null) {
             setTags(request.getTags());
