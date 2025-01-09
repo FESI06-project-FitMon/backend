@@ -75,7 +75,7 @@ public class SecurityConfig {
             List.of(
                 "http://localhost:3000",
                 "https://api.fitmon.site",
-                "http://localhost:8080"));
+                "https://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
 //        configuration.setExposedHeaders(List.of("Authorization"));

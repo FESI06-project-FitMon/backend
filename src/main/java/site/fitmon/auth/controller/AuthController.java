@@ -44,14 +44,14 @@ public class AuthController implements AuthSwaggerController {
 
         Cookie accessTokenCookie = new Cookie("access_token", tokenResponse.getAccessToken());
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(false);
+        accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(60 * 60);
         response.addCookie(accessTokenCookie);
 
         Cookie refreshTokenCookie = new Cookie("refresh_token", tokenResponse.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false);
+        refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshTokenCookie);
