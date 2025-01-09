@@ -26,6 +26,7 @@ echo "AWS_S3_REGION is set: [$(if [ -n "$AWS_S3_REGION" ]; then echo "YES"; else
 
 echo "Starting new application..."
 sudo -E java -jar \
+-Duser.timezone=Asia/Seoul \
 -Dspring.config.import=optional:file:/home/ubuntu/app/application-env.properties \
 -Dspring.config.location=file:/home/ubuntu/app/application.yml \
 cicd.jar > /home/ubuntu/app/output.log 2>&1 &
