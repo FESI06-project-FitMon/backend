@@ -184,6 +184,7 @@ public class GatheringService {
         gathering.update(request);
     }
 
+    @Transactional
     public void deleteGathering(Long gatheringId, String email) {
         Member member = validateMember(email);
 
