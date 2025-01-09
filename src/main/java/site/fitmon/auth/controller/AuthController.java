@@ -47,6 +47,7 @@ public class AuthController implements AuthSwaggerController {
         accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(60 * 60);
+        accessTokenCookie.setAttribute("SameSite", "None");
         response.addCookie(accessTokenCookie);
 
         Cookie refreshTokenCookie = new Cookie("refresh_token", tokenResponse.getRefreshToken());
@@ -54,6 +55,7 @@ public class AuthController implements AuthSwaggerController {
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
+        refreshTokenCookie.setAttribute("SameSite", "None");
         response.addCookie(refreshTokenCookie);
 
         return ResponseEntity.ok(LoginResponse.of(tokenResponse.getMemberId(), tokenResponse.getNickName(), tokenResponse.getEmail(), tokenResponse.getProfileImageUrl()));
@@ -99,6 +101,7 @@ public class AuthController implements AuthSwaggerController {
         cookie.setPath("/");
         cookie.setHttpOnly(false);
         cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 }
