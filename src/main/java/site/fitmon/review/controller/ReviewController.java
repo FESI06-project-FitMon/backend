@@ -44,9 +44,10 @@ public class ReviewController implements ReviewSwaggerController {
     public ResponseEntity<SliceResponse<GatheringReviewsResponse>> getGatheringReviews(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestParam(defaultValue = "0") int page
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "4") int pageSize
     ) {
-        PageRequest pageable = PageRequest.of(page, 10, Sort.by(Direction.DESC, "createdAt"));
+        PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
         String email = userDetails != null ? userDetails.getUsername() : null;
         return ResponseEntity.ok(reviewService.getGatheringReviews(gatheringId, email, pageable));
     }

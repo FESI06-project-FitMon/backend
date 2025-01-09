@@ -80,9 +80,10 @@ public class ChallengeController implements ChallengeSwaggerController {
         @RequestParam(required = false) ChallengeStatus status,
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestParam(defaultValue = "0") int page) {
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int pageSize) {
 
-        PageRequest pageable = PageRequest.of(page, 10, Sort.by(Direction.DESC, "createdAt"));
+        PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
         ChallengeSearchCondition condition = new ChallengeSearchCondition(status);
         String email = userDetails != null ? userDetails.getUsername() : null;
         return ResponseEntity.ok(challengeService.getGatheringChallenges(condition, gatheringId, email, pageable));

@@ -40,8 +40,7 @@ public class GatheringService {
 
     @Transactional
     public void createGathering(GatheringCreateRequest request, String username) {
-        Member member = memberRepository.findByEmail(username)
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Member member = validateMember(username);
 
         validateDateRange(request.getStartDate(), request.getEndDate());
 
@@ -77,8 +76,7 @@ public class GatheringService {
 
     @Transactional
     public void joinGathering(Long gathering, String email) {
-        Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Member member = validateMember(email);
 
         Gathering foundGathering = gatheringRepository.findById(gathering)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
@@ -170,8 +168,7 @@ public class GatheringService {
 
     @Transactional
     public void modifyGathering(@Valid GatheringModifyRequest request, Long gatheringId, String email) {
-        Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Member member = validateMember(email);
 
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
@@ -185,5 +182,27 @@ public class GatheringService {
         }
 
         gathering.update(request);
+    }
+
+    public void deleteGathering(Long gatheringId, String email) {
+        Member member = validateMember(email);
+
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+
+        GatheringParticipant participant = gatheringParticipantRepository.findByGatheringAndMember(gathering,
+                member)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_PARTICIPANT_NOT_FOUND));
+
+        if (!participant.isCaptainStatus()) {
+            throw new ApiException(ErrorCode.GATHERING_NOT_CAPTAIN);
+        }
+
+        gathering.cancel();
+    }
+
+    private Member validateMember(String email) {
+        return memberRepository.findByEmail(email)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     }
 }

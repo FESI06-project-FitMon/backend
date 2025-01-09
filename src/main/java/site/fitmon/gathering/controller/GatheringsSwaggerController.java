@@ -29,7 +29,7 @@ import site.fitmon.gathering.dto.response.GatheringResponse;
 @Tag(name = "모임 API", description = "모임 API")
 public interface GatheringsSwaggerController {
 
-    @Operation(summary = "모임 생성", security = { @SecurityRequirement(name = "cookieAuth") })
+    @Operation(summary = "모임 생성", security = {@SecurityRequirement(name = "cookieAuth")})
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "201",
@@ -77,7 +77,9 @@ public interface GatheringsSwaggerController {
         @Parameter(description = "정렬 순서 (ASC, DESC)")
         @RequestParam(defaultValue = "ASC") String sortDirection,
         @Parameter(description = "조회 시작 위치 (최소 0)")
-        @RequestParam(value = "page", defaultValue = "0") int page
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한번에 조회해 올 사이즈")
+        @RequestParam int pageSize
     );
 
     @Operation(summary = "모임 상세 조회", description = "특정 모임 상세 조회 / 평점 및 참여자 리스트 최대 5명을 불러 옵니다.")
@@ -89,7 +91,7 @@ public interface GatheringsSwaggerController {
     @GetMapping("/{gatheringId}/status")
     ResponseEntity<GatheringDetailStatusResponse> getGatheringDetailStatus(@PathVariable Long gatheringId);
 
-    @Operation(summary = "모임 수정", security = { @SecurityRequirement(name = "cookieAuth") })
+    @Operation(summary = "모임 수정", security = {@SecurityRequirement(name = "cookieAuth")})
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "201",
@@ -103,6 +105,23 @@ public interface GatheringsSwaggerController {
         )})
     ResponseEntity<ApiResponse> modifyGathering(
         @Valid @RequestBody GatheringModifyRequest request,
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal UserDetails userDetails
+    );
+
+    @Operation(summary = "모임 취소")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "모임 취소 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> deleteGathering(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails
     );

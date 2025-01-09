@@ -158,10 +158,10 @@ public class Gathering extends BaseEntity {
 
     private void validateStatusChange(GatheringStatus newStatus) {
         if (this.status == GatheringStatus.취소됨) {
-            throw new IllegalStateException("취소된 모임은 상태를 변경할 수 없습니다.");
+            throw new ApiException(ErrorCode.ALREADY_CANCEL_GATHERING);
         }
         if (this.status == GatheringStatus.종료됨) {
-            throw new IllegalStateException("종료된 모임은 상태를 변경할 수 없습니다.");
+            throw new ApiException(ErrorCode.ALREADY_COMPLETE_GATHERING);
         }
     }
 }

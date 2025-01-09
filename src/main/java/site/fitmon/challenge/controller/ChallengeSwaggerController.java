@@ -85,5 +85,8 @@ public interface ChallengeSwaggerController {
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal UserDetails userDetails,
         @Parameter(description = "조회 시작 위치 (최소 0)")
-        @RequestParam(defaultValue = "0") int page);
+        @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "한번에 조회해 올 사이즈")
+        @RequestParam int pageSize
+    );
 }

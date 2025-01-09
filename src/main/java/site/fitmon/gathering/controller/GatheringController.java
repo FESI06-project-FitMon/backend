@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,7 +68,8 @@ public class GatheringController implements GatheringsSwaggerController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
         @RequestParam(defaultValue = "deadline") String sortBy,
         @RequestParam(defaultValue = "ASC") String sortDirection,
-        @RequestParam(value = "page", defaultValue = "0") int page
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @RequestParam(defaultValue = "6") int pageSize
     ) {
 
         GatheringSearchCondition condition = GatheringSearchCondition.builder()
@@ -80,7 +82,7 @@ public class GatheringController implements GatheringsSwaggerController {
             .sortDirection(sortDirection)
             .build();
 
-        PageRequest pageable = PageRequest.of(page, 8);
+        PageRequest pageable = PageRequest.of(page, pageSize);
 
         return ResponseEntity.ok(gatheringService.searchGatherings(condition, pageable));
     }
@@ -108,5 +110,14 @@ public class GatheringController implements GatheringsSwaggerController {
         gatheringService.modifyGathering(request, gatheringId, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.of("모임 수정 완료"));
+    }
+
+    @DeleteMapping("/{gatheringId}")
+    public ResponseEntity<ApiResponse> deleteGathering(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal UserDetails userDetails
+        ) {
+        gatheringService.deleteGathering(gatheringId, userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.of("모임 취소 완료"));
     }
 }
