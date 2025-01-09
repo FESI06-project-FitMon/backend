@@ -111,6 +111,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             accessTokenCookie.setSecure(true);
             accessTokenCookie.setPath("/");
             accessTokenCookie.setMaxAge(60 * 60);
+            accessTokenCookie.setAttribute("SameSite", "None");
             response.addCookie(accessTokenCookie);
 
             setAuthentication(newAccessToken);
@@ -130,6 +131,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             refreshTokenCookie.setPath("/");
             refreshTokenCookie.setHttpOnly(true);
             refreshTokenCookie.setSecure(true);
+            refreshTokenCookie.setAttribute("SameSite", "None");
             response.addCookie(refreshTokenCookie);
 
             Cookie accessTokenCookie = new Cookie("access_token", null);
@@ -137,6 +139,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             accessTokenCookie.setPath("/");
             accessTokenCookie.setHttpOnly(true);
             accessTokenCookie.setSecure(true);
+            accessTokenCookie.setAttribute("SameSite", "None");
             response.addCookie(accessTokenCookie);
 
             SecurityContextHolder.clearContext();
