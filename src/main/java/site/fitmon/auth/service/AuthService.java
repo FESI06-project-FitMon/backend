@@ -45,8 +45,8 @@ public class AuthService {
             throw new ApiException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(member.getId(), member.getEmail());
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId(), member.getEmail());
+        String accessToken = jwtTokenProvider.createAccessToken(member.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
         refreshTokenRepository.findByMember(member)
             .ifPresentOrElse(
@@ -54,12 +54,13 @@ public class AuthService {
                 () -> refreshTokenRepository.save(new RefreshToken(refreshToken, member))
             );
 
-        return new TokenResponse(accessToken, refreshToken, member.getId(), member.getEmail());
+        return new TokenResponse(accessToken, refreshToken, member.getId(), member.getNickName(), member.getEmail(),
+            member.getProfileImageUrl());
     }
 
     @Transactional
-    public void logout(String email) {
-        Member member = memberRepository.findByEmail(email)
+    public void logout(Long memberId) {
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         refreshTokenRepository.deleteByMember(member);
         SecurityContextHolder.clearContext();

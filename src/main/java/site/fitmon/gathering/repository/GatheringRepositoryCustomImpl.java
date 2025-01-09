@@ -98,18 +98,18 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    public GatheringDetailResponse findGatheringDetail(Gathering gathering, String email) {
+    public GatheringDetailResponse findGatheringDetail(Gathering gathering, Long memberId) {
         List<ParticipantsResponse> recentParticipants = getRecentParticipants(
             gathering);
 
         boolean isCaptain = false;
-        if (email != null) {
+        if (memberId != null) {
             isCaptain = Optional.ofNullable(queryFactory
                     .select(QGatheringParticipant.gatheringParticipant.captainStatus)
                     .from(QGatheringParticipant.gatheringParticipant)
                     .join(QGatheringParticipant.gatheringParticipant.member, QMember.member)
                     .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId())
-                        .and(QMember.member.email.eq(email)))
+                        .and(QMember.member.id.eq(memberId)))
                     .fetchOne())
                 .orElse(false);
         }

@@ -14,7 +14,7 @@ public interface GatheringRepositoryCustom {
 
     Slice<GatheringResponse> searchGatherings(GatheringSearchCondition condition, Pageable pageable);
 
-    GatheringDetailResponse findGatheringDetail(Gathering gathering, String email);
+    GatheringDetailResponse findGatheringDetail(Gathering gathering, Long email);
 
     GatheringDetailStatusResponse findGatheringDetailStatus(Gathering gathering);
 }

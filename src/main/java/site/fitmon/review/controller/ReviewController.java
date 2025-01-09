@@ -8,7 +8,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
@@ -32,7 +32,7 @@ public class ReviewController implements ReviewSwaggerController {
     @PostMapping("/gatherings/{gatheringId}/guestbooks")
     public ResponseEntity<ApiResponse> createReview(
         @Valid @RequestBody ReviewCreateRequest request,
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long gatheringId) {
 
         reviewService.createReview(request, userDetails.getUsername(), gatheringId);
@@ -43,7 +43,7 @@ public class ReviewController implements ReviewSwaggerController {
     @GetMapping("/gatherings/{gatheringId}/guestbooks")
     public ResponseEntity<SliceResponse<GatheringReviewsResponse>> getGatheringReviews(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "4") int pageSize
     ) {

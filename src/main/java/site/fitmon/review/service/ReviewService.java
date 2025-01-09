@@ -34,8 +34,8 @@ public class ReviewService {
     private final ChallengeEvidenceRepository challengeEvidenceRepository;
 
     @Transactional
-    public void createReview(@Valid ReviewCreateRequest request, String email, Long gatheringId) {
-        Member member = memberRepository.findByEmail(email)
+    public void createReview(@Valid ReviewCreateRequest request, String memberId, Long gatheringId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         Gathering gathering = gatheringRepository.findById(gatheringId)
@@ -74,10 +74,10 @@ public class ReviewService {
         return challengeEvidenceRepository.hasEvidenceInGathering(member, gathering);
     }
 
-    public SliceResponse<GatheringReviewsResponse> getGatheringReviews(Long gatheringId, String email,
+    public SliceResponse<GatheringReviewsResponse> getGatheringReviews(Long gatheringId, String memberId,
         PageRequest pageable) {
-        final Long currentMemberId = email != null ?
-            memberRepository.findByEmail(email)
+        final Long currentMemberId = memberId != null ?
+            memberRepository.findById(Long.valueOf(memberId))
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND))
                 .getId()
             : null;

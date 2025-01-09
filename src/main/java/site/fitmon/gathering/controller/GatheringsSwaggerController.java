@@ -11,11 +11,11 @@ import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
@@ -43,7 +43,7 @@ public interface GatheringsSwaggerController {
         )})
     ResponseEntity<ApiResponse> createGathering(
         @Valid @RequestBody GatheringCreateRequest request,
-        @AuthenticationPrincipal UserDetails userDetails);
+        @AuthenticationPrincipal CustomUserDetails userDetails);
 
 
     @Operation(summary = "모임 참가")
@@ -60,7 +60,7 @@ public interface GatheringsSwaggerController {
         )})
     ResponseEntity<ApiResponse> joinGathering(
         @PathVariable Long gathering,
-        @AuthenticationPrincipal UserDetails userDetails);
+        @AuthenticationPrincipal CustomUserDetails userDetails);
 
     @Operation(summary = "모임 목록 조회", description = "모임 목록을 8개씩 무한 스크롤로 조회합니다. 타입, 장소, 시간 필터링이 가능합니다.")
     ResponseEntity<SliceResponse<GatheringResponse>> searchGatherings(
@@ -85,7 +85,7 @@ public interface GatheringsSwaggerController {
     @Operation(summary = "모임 상세 조회", description = "특정 모임 상세 조회 / 평점 및 참여자 리스트 최대 5명을 불러 옵니다.")
     ResponseEntity<GatheringDetailResponse> getGatheringDetail(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails);
+        @AuthenticationPrincipal CustomUserDetails userDetails);
 
     @Operation(summary = "특정 모임 상태 조회", description = "특정 모임 상태 조회")
     @GetMapping("/{gatheringId}/status")
@@ -106,7 +106,7 @@ public interface GatheringsSwaggerController {
     ResponseEntity<ApiResponse> modifyGathering(
         @Valid @RequestBody GatheringModifyRequest request,
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails
     );
 
     @Operation(summary = "모임 취소")
@@ -123,6 +123,6 @@ public interface GatheringsSwaggerController {
         )})
     ResponseEntity<ApiResponse> deleteGathering(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails
     );
 }

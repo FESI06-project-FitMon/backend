@@ -8,9 +8,11 @@ import lombok.Getter;
 public class LoginResponse {
 
     private Long memberId;
+    private String nickName;
     private String email;
+    private String profileImageUrl;
 
-    public static LoginResponse of(Long memberId, String email) {
-        return new LoginResponse(memberId, email);
+    public static LoginResponse of(Long memberId, String nickName, String email, String profileImageUrl) {
+        return new LoginResponse(memberId, nickName, email, profileImageUrl);
     }
 }

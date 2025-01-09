@@ -1,30 +1,17 @@
 package site.fitmon.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import site.fitmon.auth.dto.request.SignupRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import site.fitmon.auth.domain.CustomUserDetails;
+import site.fitmon.member.dto.response.MemberResponse;
 
 @Tag(name = "회원 API", description = "회원 API")
 public interface MemberSwaggerController {
 
-    @Operation(summary = "회원가입")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "회원가입에 성공했습니다.",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(
-                    type = "object",
-                    example = "{\"message\": \"회원가입이 완료되었습니다.\"}"
-                )
-            )
-        )})
-    ResponseEntity<Void> signUp(@RequestBody SignupRequest signupRequest);
+    @Operation(summary = "로그인 한 회원정보", description = "현재 로그인한 사용자의 아이디, 닉네임을 받아 옵니다.")
+    ResponseEntity<MemberResponse> getMyInfo(
+        @AuthenticationPrincipal CustomUserDetails userDetails);
+
 }

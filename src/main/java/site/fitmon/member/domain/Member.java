@@ -40,4 +40,8 @@ public class Member extends BaseEntity {
         this.password = password;
         this.profileImageUrl = null;
     }
+
+    public Member(Long id) {
+        this.id = id;
+    }
 }

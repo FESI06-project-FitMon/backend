@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
@@ -40,7 +40,7 @@ public class GatheringController implements GatheringsSwaggerController {
     @PostMapping
     public ResponseEntity<ApiResponse> createGathering(
         @Valid @RequestBody GatheringCreateRequest request,
-        @AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         gatheringService.createGathering(request, userDetails.getUsername());
 
@@ -51,7 +51,7 @@ public class GatheringController implements GatheringsSwaggerController {
     @PostMapping("/{gatheringId}/participants")
     public ResponseEntity<ApiResponse> joinGathering(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         gatheringService.joinGathering(gatheringId, userDetails.getUsername());
 
@@ -90,7 +90,7 @@ public class GatheringController implements GatheringsSwaggerController {
     @GetMapping("/{gatheringId}")
     public ResponseEntity<GatheringDetailResponse> getGatheringDetail(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         String email = userDetails != null ? userDetails.getUsername() : null;
         return ResponseEntity.ok(gatheringService.getGatheringDetail(gatheringId, email));
@@ -105,7 +105,7 @@ public class GatheringController implements GatheringsSwaggerController {
     public ResponseEntity<ApiResponse> modifyGathering(
         @Valid @RequestBody GatheringModifyRequest request,
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         gatheringService.modifyGathering(request, gatheringId, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -115,7 +115,7 @@ public class GatheringController implements GatheringsSwaggerController {
     @DeleteMapping("/{gatheringId}")
     public ResponseEntity<ApiResponse> deleteGathering(
         @PathVariable Long gatheringId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails
         ) {
         gatheringService.deleteGathering(gatheringId, userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.of("모임 취소 완료"));

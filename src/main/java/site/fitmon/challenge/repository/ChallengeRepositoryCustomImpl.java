@@ -29,7 +29,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     @Override
     public Slice<GatheringChallengesResponse> getGatheringChallenges(
         Long gatheringId,
-        String email,
+        Long memberId,
         ChallengeSearchCondition condition,
         Pageable pageable
     ) {
@@ -59,25 +59,25 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
                     "successParticipantCount"
                 ),
                 ExpressionUtils.as(
-                    email != null ?
+                    memberId != null ?
                         JPAExpressions
                             .select(participant.count().gt(0))
                             .from(participant)
                             .where(
                                 participant.challenge.id.eq(challenge.id),
-                                participant.member.email.eq(email)
+                                participant.member.id.eq(memberId)
                             )
                         : Expressions.constant(false),
                     "participantStatus"
                 ),
                 ExpressionUtils.as(
-                    email != null ?
+                    memberId != null ?
                         JPAExpressions
                             .select(evidence.count().gt(0))
                             .from(evidence)
                             .where(
                                 evidence.challenge.id.eq(challenge.id),
-                                evidence.member.email.eq(email)
+                                evidence.member.id.eq(memberId)
                             )
                         : Expressions.constant(false),
                     "verificationStatus"
