@@ -53,4 +53,17 @@ public class Review extends BaseEntity {
             throw new IllegalArgumentException("별점은 1에서 5 사이여야 합니다.");
         }
     }
+
+    public void update(Integer rating, String content) {
+        this.rating = rating;
+        this.content = content;
+    }
+
+    public boolean isWriter(Member member) {
+        return this.member.getId().equals(member.getId());
+    }
+
+    public boolean isGathering(Gathering gathering) {
+        return this.gathering.getId().equals(gathering.getId());
+    }
 }

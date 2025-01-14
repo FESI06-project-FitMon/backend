@@ -1,6 +1,5 @@
 package site.fitmon.review.service;
 
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +18,7 @@ import site.fitmon.member.domain.Member;
 import site.fitmon.member.repository.MemberRepository;
 import site.fitmon.review.domain.Review;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
+import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
 import site.fitmon.review.repository.ReviewRepository;
 
@@ -34,7 +34,7 @@ public class ReviewService {
     private final ChallengeEvidenceRepository challengeEvidenceRepository;
 
     @Transactional
-    public void createReview(@Valid ReviewCreateRequest request, String memberId, Long gatheringId) {
+    public void createReview(ReviewCreateRequest request, String memberId, Long gatheringId) {
         Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
@@ -51,6 +51,28 @@ public class ReviewService {
             .build();
 
         reviewRepository.save(review);
+    }
+
+    @Transactional
+    public void updateReview(ReviewUpdateRequest request, String memberId, Long gatheringId, Long guestbookId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+
+        Review review = reviewRepository.findById(guestbookId)
+            .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!review.isGathering(gathering)) {
+            throw new ApiException(ErrorCode.REVIEW_WRITER_NOT_FOUND);
+        }
+
+        if (!review.isWriter(member)) {
+            throw new ApiException(ErrorCode.INVALID_REVIEW_GATHERING);
+        }
+
+        review.update(request.getRating(), request.getContent());
     }
 
     private void validateReviewCreation(Gathering gathering, Member member) {

@@ -55,7 +55,9 @@ public enum ErrorCode {
     INVALID_REVIEW_CONDITION(BAD_REQUEST, "모임이 종료되었거나 챌린지 인증을 한 경우에만 리뷰를 작성할 수 있습니다."),
     NOT_GATHERING_PARTICIPANT(BAD_REQUEST, "모임 참여자만 리뷰를 작성할 수 있습니다."),
     REVIEW_NOT_FOUND(BAD_REQUEST, "해당 리뷰를 찾을 수 없습니다."),
-    INVALID_RATING_RANGE(BAD_REQUEST, "별점은 1에서 5 사이여야 합니다.");
+    INVALID_RATING_RANGE(BAD_REQUEST, "별점은 1에서 5 사이여야 합니다."),
+    REVIEW_WRITER_NOT_FOUND(BAD_REQUEST, "해당 리뷰의 작성자가 아닙니다."),
+    INVALID_REVIEW_GATHERING(BAD_REQUEST, "해당 모임의 리뷰가 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

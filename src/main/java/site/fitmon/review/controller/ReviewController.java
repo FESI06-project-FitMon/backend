@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
+import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
 import site.fitmon.review.service.ReviewService;
 
@@ -37,7 +39,7 @@ public class ReviewController implements ReviewSwaggerController {
 
         reviewService.createReview(request, userDetails.getUsername(), gatheringId);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.of("리뷰 생성 성공"));
+            .body(ApiResponse.of("방명록 생성 성공"));
     }
 
     @GetMapping("/gatherings/{gatheringId}/guestbooks")
@@ -51,4 +53,16 @@ public class ReviewController implements ReviewSwaggerController {
         String email = userDetails != null ? userDetails.getUsername() : null;
         return ResponseEntity.ok(reviewService.getGatheringReviews(gatheringId, email, pageable));
     }
+
+    @PutMapping("/gatherings/{gatheringId}/guestbooks/{guestbookId}")
+    public ResponseEntity<ApiResponse> updateReview(
+        @Valid @RequestBody ReviewUpdateRequest request,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable Long gatheringId,
+        @PathVariable Long guestbookId
+    ) {
+        reviewService.updateReview(request, userDetails.getUsername(), gatheringId, guestbookId);
+        return ResponseEntity.ok(ApiResponse.of("방명록 수정 성공"));
+    }
+
 }

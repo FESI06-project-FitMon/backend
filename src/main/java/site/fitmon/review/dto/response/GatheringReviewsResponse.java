@@ -11,7 +11,7 @@ import site.fitmon.review.domain.Review;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GatheringReviewsResponse {
 
-    private Long reviewId;
+    private Long guestbookId;
     private Integer rating;
     private String content;
     private LocalDateTime createDate;
@@ -34,7 +34,7 @@ public class GatheringReviewsResponse {
     }
 
     public GatheringReviewsResponse(Review review, Long currentMemberId) {
-        this.reviewId = review.getId();
+        this.guestbookId = review.getId();
         this.rating = review.getRating();
         this.content = review.getContent();
         this.createDate = review.getCreatedAt();
