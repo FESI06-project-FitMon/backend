@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
+import site.fitmon.common.dto.PageResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
 import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
+import site.fitmon.review.dto.response.MyReviewResponse;
 
 @Tag(name = "방명록 API", description = "방명록 API")
 public interface ReviewSwaggerController {
@@ -82,5 +84,13 @@ public interface ReviewSwaggerController {
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long gatheringId,
         @PathVariable Long guestbookId
+    );
+
+    @Operation(summary = "내가 작성한 방명록 목록 조회", description = "내가 작성한 방명록 목록을 조회합니다.")
+    ResponseEntity<PageResponse<MyReviewResponse>> findMyReviews(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "한번에 조회해 올 사이즈")
+        @RequestParam(defaultValue = "10") int pageSize
     );
 }

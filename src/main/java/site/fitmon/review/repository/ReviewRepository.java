@@ -1,5 +1,6 @@
 package site.fitmon.review.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         @Param("gatheringId") Long gatheringId,
         Pageable pageable
     );
+
+    Page<Review> findAllByMemberId(Long memberId, Pageable pageable);
 }
