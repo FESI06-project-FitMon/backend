@@ -75,6 +75,28 @@ public class ReviewService {
         review.update(request.getRating(), request.getContent());
     }
 
+    @Transactional
+    public void deleteReview(String memberId, Long gatheringId, Long guestbookId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+
+        Review review = reviewRepository.findById(guestbookId)
+            .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!review.isGathering(gathering)) {
+            throw new ApiException(ErrorCode.REVIEW_WRITER_NOT_FOUND);
+        }
+
+        if (!review.isWriter(member)) {
+            throw new ApiException(ErrorCode.INVALID_REVIEW_GATHERING);
+        }
+
+        reviewRepository.delete(review);
+    }
+
     private void validateReviewCreation(Gathering gathering, Member member) {
         if (!gatheringParticipantRepository.existsByGatheringAndMember(gathering, member)) {
             throw new ApiException(ErrorCode.NOT_GATHERING_PARTICIPANT);
