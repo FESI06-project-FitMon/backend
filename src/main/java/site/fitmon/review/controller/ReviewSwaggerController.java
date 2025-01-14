@@ -15,6 +15,7 @@ import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
+import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
 
 @Tag(name = "방명록 API", description = "방명록 API")
@@ -24,7 +25,7 @@ public interface ReviewSwaggerController {
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "201",
-            description = "리뷰 생성 성공",
+            description = "방명록 생성 성공",
             content = {@Content()}
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -44,5 +45,24 @@ public interface ReviewSwaggerController {
         @RequestParam(defaultValue = "0") int page,
         @Parameter(description = "한번에 조회해 올 사이즈")
         @RequestParam int pageSize
+    );
+
+    @Operation(summary = "방명록 수정")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "방명록 생성 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> updateReview(
+        @Valid @RequestBody ReviewUpdateRequest request,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable Long gatheringId,
+        @PathVariable Long guestbookId
     );
 }
