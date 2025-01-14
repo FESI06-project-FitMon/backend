@@ -1,11 +1,13 @@
 package site.fitmon.member.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
 import site.fitmon.member.domain.Member;
+import site.fitmon.member.dto.request.MemberUpdateRequest;
 import site.fitmon.member.dto.response.MemberResponse;
 import site.fitmon.member.repository.MemberRepository;
 
@@ -28,4 +30,10 @@ public class MemberService {
             .build();
     }
 
+    @Transactional
+    public void updateMember(@Valid MemberUpdateRequest request, String memberId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        member.updateMemberProfile(request.getNickName(), request.getProfileImageUrl());
+    }
 }

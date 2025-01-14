@@ -44,4 +44,9 @@ public class Member extends BaseEntity {
     public Member(Long id) {
         this.id = id;
     }
+
+    public void updateMemberProfile(String nickName, String profileImageUrl) {
+        this.nickName = nickName;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
