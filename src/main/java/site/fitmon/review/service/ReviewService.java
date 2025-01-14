@@ -2,11 +2,15 @@ package site.fitmon.review.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.repository.ChallengeEvidenceRepository;
+import site.fitmon.common.dto.PageResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
@@ -20,6 +24,7 @@ import site.fitmon.review.domain.Review;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
 import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
+import site.fitmon.review.dto.response.MyReviewResponse;
 import site.fitmon.review.repository.ReviewRepository;
 
 @Service
@@ -138,6 +143,30 @@ public class ReviewService {
         return new SliceResponse<>(
             response,
             slice.hasNext()
+        );
+    }
+
+    public PageResponse<MyReviewResponse> findMyReviews(String memberId, Pageable pageable) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Page<Review> reviews = reviewRepository.findAllByMemberId(
+            member.getId(),
+            PageRequest.of(
+                pageable.getPageNumber(),
+                10,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+            )
+        );
+
+        List<MyReviewResponse> response = reviews.getContent().stream()
+            .map(MyReviewResponse::from)
+            .toList();
+
+        return new PageResponse<>(
+            response,
+            reviews.getNumber(),
+            reviews.getTotalElements(),
+            reviews.getTotalPages()
         );
     }
 }

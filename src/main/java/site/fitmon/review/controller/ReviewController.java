@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
+import site.fitmon.common.dto.PageResponse;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
 import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
+import site.fitmon.review.dto.response.MyReviewResponse;
 import site.fitmon.review.service.ReviewService;
 
 @RestController
@@ -74,5 +76,15 @@ public class ReviewController implements ReviewSwaggerController {
     ) {
         reviewService.deleteReview(userDetails.getUsername(), gatheringId, guestbookId);
         return ResponseEntity.ok(ApiResponse.of("방명록 삭제 성공"));
+    }
+
+    @GetMapping("/guestbooks/my")
+    public ResponseEntity<PageResponse<MyReviewResponse>> findMyReviews(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(reviewService.findMyReviews(userDetails.getUsername(), pageable));
     }
 }
