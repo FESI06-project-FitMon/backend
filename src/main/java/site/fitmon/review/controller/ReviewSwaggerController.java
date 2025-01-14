@@ -65,4 +65,22 @@ public interface ReviewSwaggerController {
         @PathVariable Long gatheringId,
         @PathVariable Long guestbookId
     );
+
+    @Operation(summary = "방명록 삭제")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "방명록 삭제 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> deleteReview(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable Long gatheringId,
+        @PathVariable Long guestbookId
+    );
 }
