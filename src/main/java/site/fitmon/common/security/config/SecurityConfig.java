@@ -77,7 +77,7 @@ public class SecurityConfig {
                 "https://api.fitmon.site",
                 "https://localhost:3000",
                 "https://fitmon-mauve.vercel.app"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
