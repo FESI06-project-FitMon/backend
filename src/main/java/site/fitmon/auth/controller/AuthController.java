@@ -46,7 +46,7 @@ public class AuthController implements AuthSwaggerController {
         accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(60 * 60);
+        accessTokenCookie.setMaxAge(60 * 60 * 2);
         accessTokenCookie.setAttribute("SameSite", "None");
         response.addCookie(accessTokenCookie);
 
