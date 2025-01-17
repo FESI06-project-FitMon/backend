@@ -56,10 +56,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleTokenValidation(HttpServletRequest request, HttpServletResponse response) {
         String token = resolveToken(request);
+        String refreshToken = getRefreshTokenFromCookie(request);
+
+        if (token == null && refreshToken != null) {
+            refreshAccessToken(refreshToken, response);
+            token = resolveToken(request);
+        }
         if (token == null) {
             return;
         }
-
         try {
             validateAccessTokenAndSetAuthentication(token);
         } catch (ExpiredJwtException e) {
@@ -110,7 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             accessTokenCookie.setHttpOnly(true);
             accessTokenCookie.setSecure(true);
             accessTokenCookie.setPath("/");
-            accessTokenCookie.setMaxAge(60 * 60 * 2);
+            accessTokenCookie.setMaxAge(60 * 60);
             accessTokenCookie.setAttribute("SameSite", "None");
             response.addCookie(accessTokenCookie);
 
