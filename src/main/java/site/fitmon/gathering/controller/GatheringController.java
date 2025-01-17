@@ -23,6 +23,7 @@ import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.request.GatheringLikesRequest;
 import site.fitmon.gathering.dto.request.GatheringModifyRequest;
 import site.fitmon.gathering.dto.request.GatheringSearchCondition;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
@@ -69,7 +70,7 @@ public class GatheringController implements GatheringsSwaggerController {
         @RequestParam(defaultValue = "deadline") String sortBy,
         @RequestParam(defaultValue = "ASC") String sortDirection,
         @RequestParam(value = "page", defaultValue = "0") int page,
-        @RequestParam(defaultValue = "6") int pageSize
+        @RequestParam(defaultValue = "8") int pageSize
     ) {
 
         GatheringSearchCondition condition = GatheringSearchCondition.builder()
@@ -116,8 +117,35 @@ public class GatheringController implements GatheringsSwaggerController {
     public ResponseEntity<ApiResponse> deleteGathering(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal CustomUserDetails userDetails
-        ) {
+    ) {
         gatheringService.deleteGathering(gatheringId, userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.of("모임 취소 완료"));
+    }
+
+    @PostMapping("/likes")
+    public ResponseEntity<SliceResponse<GatheringResponse>> getLikedGatherings(
+        @RequestBody GatheringLikesRequest request,
+        @RequestParam(required = false) MainType mainType,
+        @RequestParam(required = false) SubType subType,
+        @RequestParam(required = false) String mainLocation,
+        @RequestParam(required = false) String subLocation,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
+        @RequestParam(defaultValue = "deadline") String sortBy,
+        @RequestParam(defaultValue = "ASC") String sortDirection,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int pageSize
+    ) {
+        GatheringSearchCondition condition = GatheringSearchCondition.builder()
+            .mainType(mainType)
+            .subType(subType)
+            .mainLocation(mainLocation)
+            .subLocation(subLocation)
+            .searchDate(searchDate)
+            .sortBy(sortBy)
+            .sortDirection(sortDirection)
+            .build();
+
+        PageRequest pageable = PageRequest.of(page, pageSize);
+        return ResponseEntity.ok(gatheringService.getLikedGatherings(request.getGatheringIds(), condition, pageable));
     }
 }

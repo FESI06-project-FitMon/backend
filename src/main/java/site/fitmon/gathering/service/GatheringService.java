@@ -202,6 +202,17 @@ public class GatheringService {
         gathering.cancel();
     }
 
+    @Transactional(readOnly = true)
+    public SliceResponse<GatheringResponse> getLikedGatherings(List<Long> gatheringIds,
+        GatheringSearchCondition condition, Pageable pageable) {
+        Slice<GatheringResponse> slice = gatheringRepository.findLikedGatherings(gatheringIds, condition, pageable);
+
+        return new SliceResponse<>(
+            slice.getContent(),
+            slice.hasNext()
+        );
+    }
+
     private Member validateMember(String id) {
         return memberRepository.findById(Long.valueOf(id))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));

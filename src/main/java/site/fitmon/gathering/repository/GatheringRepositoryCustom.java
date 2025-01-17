@@ -1,5 +1,6 @@
 package site.fitmon.gathering.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,7 @@ public interface GatheringRepositoryCustom {
     GatheringDetailResponse findGatheringDetail(Gathering gathering, Long email);
 
     GatheringDetailStatusResponse findGatheringDetailStatus(Gathering gathering);
+
+    Slice<GatheringResponse> findLikedGatherings(List<Long> gatheringIds, GatheringSearchCondition condition,
+        Pageable pageable);
 }

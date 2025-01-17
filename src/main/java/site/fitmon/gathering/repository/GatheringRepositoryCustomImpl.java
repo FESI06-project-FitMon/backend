@@ -147,6 +147,61 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             .build();
     }
 
+    @Override
+    public Slice<GatheringResponse> findLikedGatherings(List<Long> gatheringIds, GatheringSearchCondition condition,
+        Pageable pageable) {
+        QGathering gathering = QGathering.gathering;
+
+        NumberTemplate<Long> participantCount = Expressions.numberTemplate(Long.class,
+            "(select count(*) from GatheringParticipant gp where gp.gathering.id = {0})",
+            gathering.id);
+
+        JPAQuery<GatheringResponse> query = queryFactory
+            .select(Projections.constructor(GatheringResponse.class,
+                gathering.id,
+                gathering.title,
+                gathering.description,
+                gathering.mainType,
+                gathering.subType,
+                gathering.imageUrl,
+                gathering.startDate,
+                gathering.endDate,
+                gathering.mainLocation,
+                gathering.subLocation,
+                gathering.minCount,
+                gathering.totalCount,
+                participantCount,
+                gathering.status,
+                gathering.tags))
+            .from(gathering)
+            .where(
+                gathering.id.in(gatheringIds),
+                mainTypeEq(condition.getMainType()),
+                subTypeEq(condition.getSubType()),
+                mainLocationEq(condition.getMainLocation()),
+                subLocationEq(condition.getSubLocation()),
+                dateInclude(condition.getSearchDate()),
+                gathering.deleted.eq(false)
+            );
+
+        OrderSpecifier<?>[] orderSpecifiers = createOrderSpecifiers(condition.getSortBy(),
+            condition.getSortDirection(), gathering, participantCount);
+        query.orderBy(orderSpecifiers);
+
+        List<GatheringResponse> content = query
+            .offset(pageable.getPageNumber() * pageable.getPageSize())
+            .limit(pageable.getPageSize() + 1)
+            .fetch();
+
+        boolean hasNext = false;
+        if (content.size() > pageable.getPageSize()) {
+            content.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
     private Double getAvgRating(Gathering gathering) {
         Double avgRating = queryFactory
             .select(QReview.review.rating.avg())
