@@ -58,7 +58,9 @@ public class AuthController implements AuthSwaggerController {
         refreshTokenCookie.setAttribute("SameSite", "None");
         response.addCookie(refreshTokenCookie);
 
-        return ResponseEntity.ok(LoginResponse.of(tokenResponse.getMemberId(), tokenResponse.getNickName(), tokenResponse.getEmail(), tokenResponse.getProfileImageUrl()));
+        return ResponseEntity.ok(
+            LoginResponse.of(tokenResponse.getMemberId(), tokenResponse.getNickName(), tokenResponse.getEmail(),
+                tokenResponse.getProfileImageUrl()));
     }
 
     @PostMapping("/logout")
@@ -99,7 +101,7 @@ public class AuthController implements AuthSwaggerController {
         Cookie cookie = new Cookie(cookieName, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
-        cookie.setHttpOnly(false);
+        cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);

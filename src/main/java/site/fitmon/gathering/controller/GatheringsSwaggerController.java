@@ -21,6 +21,7 @@ import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.gathering.domain.MainType;
 import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.dto.request.GatheringCreateRequest;
+import site.fitmon.gathering.dto.request.GatheringLikesRequest;
 import site.fitmon.gathering.dto.request.GatheringModifyRequest;
 import site.fitmon.gathering.dto.response.GatheringDetailResponse;
 import site.fitmon.gathering.dto.response.GatheringDetailStatusResponse;
@@ -124,5 +125,26 @@ public interface GatheringsSwaggerController {
     ResponseEntity<ApiResponse> deleteGathering(
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal CustomUserDetails userDetails
+    );
+
+    @Operation(summary = "찜한 모임 목록 조회", description = "찜한 모임 목록을 8개씩 무한 스크롤로 조회합니다. 타입, 장소, 시간 필터링이 가능합니다.")
+    ResponseEntity<SliceResponse<GatheringResponse>> getLikedGatherings(
+        @RequestBody GatheringLikesRequest request,
+        @RequestParam(required = false) MainType mainType,
+        @RequestParam(required = false) SubType subType,
+        @Parameter(description = "서울시")
+        @RequestParam(required = false) String mainLocation,
+        @Parameter(description = "강남구")
+        @RequestParam(required = false) String subLocation,
+        @Parameter(description = "검색 날짜 (YYYY-MM-DD)")
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
+        @Parameter(description = "정렬 기준 (deadline, participants) / 마감 임박 -> deadline, ASC")
+        @RequestParam(defaultValue = "deadline") String sortBy,
+        @Parameter(description = "정렬 순서 (ASC, DESC)")
+        @RequestParam(defaultValue = "ASC") String sortDirection,
+        @Parameter(description = "조회 시작 위치 (최소 0)")
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @Parameter(description = "한번에 조회해 올 사이즈")
+        @RequestParam int pageSize
     );
 }
