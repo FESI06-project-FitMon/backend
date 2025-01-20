@@ -45,6 +45,9 @@ public class Challenge extends BaseEntity {
     @Column(nullable = false)
     private String imageUrl;
 
+    @Column
+    private Integer totalCount;
+
     @Column(nullable = false)
     private LocalDateTime startDate;
 
@@ -52,12 +55,13 @@ public class Challenge extends BaseEntity {
     private LocalDateTime endDate;
 
     @Builder
-    public Challenge(Gathering gathering, String title, String description, String imageUrl, LocalDateTime startDate,
-        LocalDateTime endDate) {
+    public Challenge(Gathering gathering, String title, String description, String imageUrl, Integer totalCount,
+        LocalDateTime startDate, LocalDateTime endDate) {
         this.gathering = gathering;
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.totalCount = totalCount;
         this.startDate = startDate;
         this.endDate = endDate;
     }

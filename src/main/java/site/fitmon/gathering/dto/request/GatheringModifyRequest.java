@@ -3,6 +3,7 @@ package site.fitmon.gathering.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +38,10 @@ public class GatheringModifyRequest {
 
     @Schema(description = "모임 상세 장소", example = "송파구")
     private String subLocation;
+
+    @Schema(description = "모임 최대 인원", example = "15")
+    @Max(value = 30, message = "최대 인원은 30명을 초과할 수 없습니다.")
+    private Integer totalCount;
 
     @Schema(description = "모임 태그 목록 (최대 3개)", example = "[\"오운완\", \"하체귀신\", \"프로틴추천\"]")
     private List<String> tags;

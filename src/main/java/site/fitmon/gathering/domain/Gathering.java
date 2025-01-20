@@ -119,6 +119,9 @@ public class Gathering extends BaseEntity {
         if (request.getSubLocation() != null) {
             this.subLocation = request.getSubLocation();
         }
+        if (request.getTotalCount() != null) {
+            this.totalCount = request.getTotalCount();
+        }
         if (request.getTags() != null) {
             setTags(request.getTags());
         }
