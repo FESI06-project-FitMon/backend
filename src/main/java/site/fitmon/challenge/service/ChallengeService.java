@@ -61,6 +61,7 @@ public class ChallengeService {
             .description(request.getDescription())
             .imageUrl(request.getImageUrl())
             .gathering(gathering)
+            .totalCount(request.getTotalCount())
             .startDate(request.getStartDate())
             .endDate(request.getEndDate())
             .build();

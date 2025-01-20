@@ -24,6 +24,9 @@ public class ChallengeCreateRequest {
     @Schema(description = "챌린지 이미지 URL", example = "https://fitmon-bucket.s3.amazonaws.com/challenges/df171e45-29b7-4b37-9ad4-fbbe7c94e417_running.jpg")
     private String imageUrl;
 
+    @Schema(description = "챌린지 최대 인원", example = "15")
+    private Integer totalCount;
+
     @Schema(description = "챌린지 시작 일시", example = "2025-03-10T14:00:00")
     @Future(message = "시작일은 현재 시간 이후여야 합니다.")
     private LocalDateTime startDate;
