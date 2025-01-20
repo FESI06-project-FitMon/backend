@@ -3,6 +3,7 @@ package site.fitmon.gathering.service;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -157,7 +158,8 @@ public class GatheringService {
     public GatheringDetailResponse getGatheringDetail(Long gatheringId, String memberId) {
         Gathering gathering = gatheringRepository.findById(gatheringId)
             .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
-        return gatheringRepository.findGatheringDetail(gathering, Long.valueOf(memberId));
+        Long memberIdLong = (memberId != null) ? Long.valueOf(memberId) : null;
+        return gatheringRepository.findGatheringDetail(gathering, memberIdLong);
     }
 
     public GatheringDetailStatusResponse getGatheringDetailStatus(Long gatheringId) {
@@ -214,7 +216,9 @@ public class GatheringService {
     }
 
     private Member validateMember(String id) {
-        return memberRepository.findById(Long.valueOf(id))
+        return Optional.ofNullable(id)
+            .map(Long::valueOf)
+            .flatMap(memberRepository::findById)
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     }
 }
