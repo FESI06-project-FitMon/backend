@@ -16,6 +16,7 @@ public class GatheringDetailResponse {
 
     private Long gatheringId;
     private boolean captainStatus;
+    private boolean participantStatus;
     private String title;
     private String description;
     private MainType mainType;
@@ -35,14 +36,15 @@ public class GatheringDetailResponse {
     private Long guestBookCount;
 
     @Builder
-    public GatheringDetailResponse(Long gatheringId, boolean captainStatus, String title, String description,
-        MainType mainType,
-        SubType subType,
-        String imageUrl, LocalDateTime startDate, LocalDateTime endDate, String mainLocation, String subLocation,
-        Integer minCount, Integer totalCount, Long participantCount, GatheringStatus status, List<String> tags,
-        List<ParticipantsResponse> participants, Double averageRating, Long guestBookCount) {
+    public GatheringDetailResponse(Long gatheringId, boolean captainStatus, boolean participantStatus, String title,
+                                   String description, MainType mainType, SubType subType, String imageUrl,
+                                   LocalDateTime startDate, LocalDateTime endDate, String mainLocation, String subLocation,
+                                   Integer minCount, Integer totalCount, Long participantCount, GatheringStatus status,
+                                   List<String> tags, List<ParticipantsResponse> participants, Double averageRating,
+                                   Long guestBookCount) {
         this.gatheringId = gatheringId;
         this.captainStatus = captainStatus;
+        this.participantStatus = participantStatus;
         this.title = title;
         this.description = description;
         this.mainType = mainType;

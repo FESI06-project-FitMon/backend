@@ -99,8 +99,7 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
     }
 
     public GatheringDetailResponse findGatheringDetail(Gathering gathering, Long memberId) {
-        List<ParticipantsResponse> recentParticipants = getRecentParticipants(
-            gathering);
+        List<ParticipantsResponse> recentParticipants = getRecentParticipants(gathering);
 
         boolean isCaptain = false;
         if (memberId != null) {
@@ -112,6 +111,16 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                         .and(QMember.member.id.eq(memberId)))
                     .fetchOne())
                 .orElse(false);
+        }
+
+        boolean isParticipant = false;
+        if (memberId != null) {
+            isParticipant = queryFactory
+                .selectOne()
+                .from(QGatheringParticipant.gatheringParticipant)
+                .where(QGatheringParticipant.gatheringParticipant.gathering.id.eq(gathering.getId())
+                    .and(QGatheringParticipant.gatheringParticipant.member.id.eq(memberId)))
+                .fetchFirst() != null;
         }
 
         Long reviewCount = queryFactory
@@ -135,15 +144,16 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
             .totalCount(gathering.getTotalCount())
             .participantCount(getParticipantCount(gathering))
             .status(gathering.getStatus())
-            .tags(((gathering.getTags() != null ?
-                Arrays.asList(gathering.getTags().split(",")) :
-                Collections.emptyList()))
-            ).participants(recentParticipants)
-            .averageRating(getAvgRating(gathering) != null ?
-                BigDecimal.valueOf(getAvgRating(gathering)).setScale(1, RoundingMode.HALF_UP).doubleValue() :
-                0.0)
+            .tags(gathering.getTags() != null
+                ? Arrays.asList(gathering.getTags().split(","))
+                : Collections.emptyList())
+            .participants(recentParticipants)
+            .averageRating(getAvgRating(gathering) != null
+                ? BigDecimal.valueOf(getAvgRating(gathering)).setScale(1, RoundingMode.HALF_UP).doubleValue()
+                : 0.0)
             .guestBookCount(reviewCount)
             .captainStatus(isCaptain)
+            .participantStatus(isParticipant)
             .build();
     }
 
