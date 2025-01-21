@@ -13,4 +13,6 @@ public interface GatheringParticipantRepository extends JpaRepository<GatheringP
     Optional<GatheringParticipant> findByGatheringAndMember(Gathering gathering, Member member);
 
     boolean existsByGatheringAndMember(Gathering foundGathering, Member member);
+
+    Optional<GatheringParticipant> findByGatheringIdAndCaptainStatus(Long gatheringId, boolean captainStatus);
 }

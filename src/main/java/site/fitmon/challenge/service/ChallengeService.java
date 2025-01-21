@@ -134,4 +134,26 @@ public class ChallengeService {
             slice.hasNext()
         );
     }
+
+    @Transactional
+    public void deleteChallenge(Long challengeId, String memberId) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ApiException(ErrorCode.CHALLENGE_NOT_FOUND));
+
+        Long gatheringId = challenge.getGathering().getId();
+
+        GatheringParticipant owner = gatheringParticipantRepository.findByGatheringIdAndCaptainStatus(gatheringId, true)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_CAPTAIN));
+
+        if (!owner.getMember().getId().equals(member.getId())) {
+            throw new ApiException(ErrorCode.GATHERING_NOT_CAPTAIN);
+        }
+
+        challenge.delete();
+        challengeParticipantRepository.deleteByChallenge(challenge);
+        challengeEvidenceRepository.deleteByChallenge(challenge);
+    }
 }

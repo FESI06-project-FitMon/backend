@@ -89,4 +89,21 @@ public interface ChallengeSwaggerController {
         @Parameter(description = "한번에 조회해 올 사이즈")
         @RequestParam int pageSize
     );
+
+    @Operation(summary = "챌린지 삭제")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "챌린지 삭제 성공",
+            content = {@Content()}
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 입력 값",
+            content = {@Content()}
+        )})
+    ResponseEntity<ApiResponse> deleteChallenge(
+        @PathVariable Long challengeId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    );
 }
