@@ -1,6 +1,9 @@
 package site.fitmon.review.service;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +19,8 @@ import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
 import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.domain.GatheringStatus;
+import site.fitmon.gathering.domain.MainType;
+import site.fitmon.gathering.domain.SubType;
 import site.fitmon.gathering.repository.GatheringParticipantRepository;
 import site.fitmon.gathering.repository.GatheringRepository;
 import site.fitmon.member.domain.Member;
@@ -24,7 +29,10 @@ import site.fitmon.review.domain.Review;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
 import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
+import site.fitmon.review.dto.response.GuestbookResponse;
 import site.fitmon.review.dto.response.MyReviewResponse;
+import site.fitmon.review.dto.response.ReviewStatisticsDto;
+import site.fitmon.review.dto.response.ReviewStatisticsProjection;
 import site.fitmon.review.repository.ReviewRepository;
 
 @Service
@@ -168,5 +176,69 @@ public class ReviewService {
             reviews.getTotalElements(),
             reviews.getTotalPages()
         );
+    }
+
+    public ReviewStatisticsDto getReviewStatistics(
+        MainType mainType,
+        SubType subType,
+        String mainLocation,
+        String subLocation,
+        LocalDate searchDate
+    ) {
+        List<ReviewStatisticsProjection> statistics = reviewRepository.findReviewStatistics(
+            mainType, subType, mainLocation, subLocation, searchDate
+        );
+
+        Map<String, Long> ratingCounts = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            ratingCounts.put(i + "점", 0L);
+        }
+
+        statistics.forEach(stat -> ratingCounts.put(stat.getRating() + "점", stat.getCount()));
+
+        double totalRatings = statistics.stream()
+            .mapToDouble(stat -> stat.getRating() * stat.getCount())
+            .sum();
+        long totalReviews = statistics.stream()
+            .mapToLong(ReviewStatisticsProjection::getCount)
+            .sum();
+        double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0.0;
+
+        return new ReviewStatisticsDto(averageRating, ratingCounts);
+    }
+
+    public SliceResponse<GuestbookResponse> getGuestbookEntries(
+        MainType mainType,
+        SubType subType,
+        String mainLocation,
+        String subLocation,
+        LocalDate searchDate,
+        String sortBy,
+        String sortDirection,
+        int page,
+        int pageSize
+    ) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, resolveSortField(sortBy));
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        Page<GuestbookResponse> guestbookEntries = reviewRepository.findGuestbookEntries(
+            mainType, subType, mainLocation, subLocation, searchDate, pageable
+        );
+        return new SliceResponse<>(
+            guestbookEntries.getContent(),
+            guestbookEntries.hasNext()
+        );
+    }
+
+    private String resolveSortField(String sortBy) {
+        switch (sortBy) {
+            case "highestRating":
+                return "reviewScore";
+            case "mostParticipants":
+                return "participantCount";
+            default:
+                return "createdAt";
+        }
     }
 }

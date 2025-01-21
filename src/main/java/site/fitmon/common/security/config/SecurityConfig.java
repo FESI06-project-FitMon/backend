@@ -58,6 +58,10 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/gatherings/likes")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/guestbooks/scores")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/guestbooks")
+                        .permitAll()
                         .anyRequest()
                         .authenticated())
             .sessionManagement(

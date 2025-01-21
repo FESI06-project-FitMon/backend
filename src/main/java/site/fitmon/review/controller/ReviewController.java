@@ -1,10 +1,12 @@
 package site.fitmon.review.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,10 +23,14 @@ import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.PageResponse;
 import site.fitmon.common.dto.SliceResponse;
+import site.fitmon.gathering.domain.MainType;
+import site.fitmon.gathering.domain.SubType;
 import site.fitmon.review.dto.request.ReviewCreateRequest;
 import site.fitmon.review.dto.request.ReviewUpdateRequest;
 import site.fitmon.review.dto.response.GatheringReviewsResponse;
+import site.fitmon.review.dto.response.GuestbookResponse;
 import site.fitmon.review.dto.response.MyReviewResponse;
+import site.fitmon.review.dto.response.ReviewStatisticsDto;
 import site.fitmon.review.service.ReviewService;
 
 @RestController
@@ -86,5 +92,39 @@ public class ReviewController implements ReviewSwaggerController {
     ) {
         PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
         return ResponseEntity.ok(reviewService.findMyReviews(userDetails.getUsername(), pageable));
+    }
+
+    @GetMapping("/guestbooks/scores")
+    public ResponseEntity<ReviewStatisticsDto> getReviewStatistics(
+        @RequestParam(required = false) MainType mainType,
+        @RequestParam(required = false) SubType subType,
+        @RequestParam(required = false) String mainLocation,
+        @RequestParam(required = false) String subLocation,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate
+
+    ) {
+        ReviewStatisticsDto statistics = reviewService.getReviewStatistics(
+            mainType, subType, mainLocation, subLocation, searchDate
+        );
+
+        return ResponseEntity.ok(statistics);
+    }
+
+    @GetMapping("/guestbooks")
+    public ResponseEntity<SliceResponse<GuestbookResponse>> getGuestbookEntries(
+        @RequestParam(required = false) MainType mainType,
+        @RequestParam(required = false) SubType subType,
+        @RequestParam(required = false) String mainLocation,
+        @RequestParam(required = false) String subLocation,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
+        @RequestParam(defaultValue = "latest") String sortBy,
+        @RequestParam(defaultValue = "DESC") String sortDirection,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @RequestParam(value = "pageSize", defaultValue = "20") int pageSize
+    ) {
+        SliceResponse<GuestbookResponse> guestbookEntries = reviewService.getGuestbookEntries(
+            mainType, subType, mainLocation, subLocation, searchDate, sortBy, sortDirection, page, pageSize
+        );
+        return ResponseEntity.ok(guestbookEntries);
     }
 }
