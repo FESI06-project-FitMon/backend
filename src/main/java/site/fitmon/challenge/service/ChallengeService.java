@@ -126,8 +126,9 @@ public class ChallengeService {
         String memberId,
         Pageable pageable
     ) {
+        Long memberIdLong = (memberId != null) ? Long.valueOf(memberId) : null;
         Slice<GatheringChallengesResponse> slice = challengeRepository.getGatheringChallenges(gatheringId,
-            Long.valueOf(memberId), condition, pageable);
+            memberIdLong, condition, pageable);
         return new SliceResponse<>(
             slice.getContent(),
             slice.hasNext()

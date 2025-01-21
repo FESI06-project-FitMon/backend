@@ -10,7 +10,7 @@ import site.fitmon.challenge.dto.response.GatheringChallengesResponse;
 public interface ChallengeRepositoryCustom {
 
     Slice<GatheringChallengesResponse> getGatheringChallenges(Long gatheringId,
-        Long email,
+        Long memberId,
         ChallengeSearchCondition condition,
         Pageable pageable);
 }
