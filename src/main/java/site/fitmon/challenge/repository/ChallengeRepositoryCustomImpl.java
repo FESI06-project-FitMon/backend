@@ -114,7 +114,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
         QChallenge challenge = QChallenge.challenge;
 
         return status == ChallengeStatus.IN_PROGRESS ?
-            challenge.endDate.before(now) :
-            challenge.endDate.after(now);
+            challenge.endDate.after(now) :
+            challenge.endDate.before(now);
     }
 }
