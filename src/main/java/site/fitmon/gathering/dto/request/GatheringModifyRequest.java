@@ -2,7 +2,6 @@ package site.fitmon.gathering.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -26,11 +25,9 @@ public class GatheringModifyRequest {
     private String imageUrl;
 
     @Schema(description = "모임 시작 일시", example = "2025-04-10T14:00:00")
-    @Future(message = "시작일은 현재 시간 이후여야 합니다.")
     private LocalDateTime startDate;
 
     @Schema(description = "모임 종료 일시", example = "2025-05-20T16:00:00")
-    @Future(message = "종료일은 현재 시간 이후여야 합니다.")
     private LocalDateTime endDate;
 
     @Schema(description = "모임 메인 장소", example = "서울시")

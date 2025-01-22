@@ -1,6 +1,7 @@
 package site.fitmon.gathering.service;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -122,12 +123,12 @@ public class GatheringService {
     }
 
     private void validateChallengesDateRange(List<ChallengeCreateRequest> challenges, Gathering gathering) {
-        LocalDateTime gatheringStartDate = gathering.getStartDate();
-        LocalDateTime gatheringEndDate = gathering.getEndDate();
+        LocalDate gatheringStartDate = gathering.getStartDate().toLocalDate();
+        LocalDate gatheringEndDate = gathering.getEndDate().toLocalDate();
 
         for (ChallengeCreateRequest challenge : challenges) {
-            LocalDateTime challengeStartDate = challenge.getStartDate();
-            LocalDateTime challengeEndDate = challenge.getEndDate();
+            LocalDate challengeStartDate = challenge.getStartDate().toLocalDate();
+            LocalDate challengeEndDate = challenge.getEndDate().toLocalDate();
 
             if (challengeStartDate.isBefore(gatheringStartDate)) {
                 throw new ApiException(ErrorCode.CHALLENGE_START_DATE_BEFORE_GATHERING);
@@ -144,13 +145,13 @@ public class GatheringService {
     }
 
     private void validateDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = LocalDate.now();
 
-        if (startDate.isBefore(now)) {
+        if (startDate.toLocalDate().isBefore(today)) {
             throw new ApiException(ErrorCode.INVALID_START_DATE);
         }
 
-        if (endDate.isBefore(startDate)) {
+        if (endDate.toLocalDate().isBefore(startDate.toLocalDate())) {
             throw new ApiException(ErrorCode.INVALID_DATE_RANGE);
         }
     }
