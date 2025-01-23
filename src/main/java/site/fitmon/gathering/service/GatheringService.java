@@ -222,4 +222,18 @@ public class GatheringService {
             .flatMap(memberRepository::findById)
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     }
+
+    @Transactional
+    public void cancelGathering(String memberId, Long gatheringId) {
+        Member member = validateMember(memberId);
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_NOT_FOUND));
+        GatheringParticipant participant = gatheringParticipantRepository.findByGatheringAndMember(gathering,
+                member)
+            .orElseThrow(() -> new ApiException(ErrorCode.GATHERING_PARTICIPANT_NOT_FOUND));
+        if (participant.isCaptainStatus()) {
+            throw new ApiException(ErrorCode.GATHERING_CAPTAIN);
+        }
+        gatheringParticipantRepository.delete(participant);
+    }
 }
