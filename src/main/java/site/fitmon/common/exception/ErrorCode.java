@@ -33,6 +33,7 @@ public enum ErrorCode {
     ALREADY_JOINED_GATHERING(BAD_REQUEST, "이미 참여한 모임입니다."),
     ALREADY_CANCEL_GATHERING(BAD_REQUEST, "취소된 모임은 상태를 변경할 수 없습니다."),
     ALREADY_COMPLETE_GATHERING(BAD_REQUEST, "취소된 모임은 상태를 변경할 수 없습니다."),
+    GATHERING_CAPTAIN(BAD_REQUEST, "모임의 주최자는 참여취소를 할 수 없습니다."),
 
     //Image
     IMAGE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "이미지 업로드 중 오류가 발생했습니다."),

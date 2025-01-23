@@ -148,4 +148,13 @@ public class GatheringController implements GatheringsSwaggerController {
         PageRequest pageable = PageRequest.of(page, pageSize);
         return ResponseEntity.ok(gatheringService.getLikedGatherings(request.getGatheringIds(), condition, pageable));
     }
+
+    @DeleteMapping("/{gatheringId}/cancel")
+    public ResponseEntity<ApiResponse> cancelParticipantGathering(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable Long gatheringId
+    ) {
+        gatheringService.cancelGathering(userDetails.getUsername(), gatheringId);
+        return ResponseEntity.ok(ApiResponse.of("모임 참여 취소"));
+    }
 }
