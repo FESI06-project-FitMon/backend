@@ -18,6 +18,7 @@ import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.PageResponse;
 import site.fitmon.member.dto.request.MemberUpdateRequest;
 import site.fitmon.member.dto.response.MemberCalendarResponse;
+import site.fitmon.member.dto.response.MemberCaptainGatheringResponse;
 import site.fitmon.member.dto.response.MemberParticipantsResponse;
 import site.fitmon.member.dto.response.MemberResponse;
 import site.fitmon.member.service.MemberService;
@@ -62,5 +63,15 @@ public class MemberController implements MemberSwaggerController {
     ) {
         PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
         return ResponseEntity.ok(memberService.getParticipantsGatherings(userDetails.getUsername(), pageable));
+    }
+
+    @GetMapping("/my-page/gatherings/captain")
+    public ResponseEntity<PageResponse<MemberCaptainGatheringResponse>> getCaptainGathergins(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(memberService.getCaptainGatherings(userDetails.getUsername(), pageable));
     }
 }

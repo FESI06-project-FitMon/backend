@@ -32,4 +32,8 @@ public interface GatheringParticipantRepository extends JpaRepository<GatheringP
 
     @Query("SELECT gp FROM GatheringParticipant gp WHERE gp.gathering.id = :gatheringId ORDER BY gp.createdAt DESC")
     List<GatheringParticipant> findByGatheringId(@Param("gatheringId") Long gatheringId);
+
+    @Query("SELECT gp FROM GatheringParticipant gp WHERE gp.member.id = :memberId AND gp.captainStatus = true")
+    Page<GatheringParticipant> findByMemberIdAndCaptainStatusTrue(@Param("memberId") Long memberId, Pageable pageable);
+
 }
