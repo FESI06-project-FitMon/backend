@@ -12,6 +12,7 @@ import site.fitmon.common.dto.ApiResponse;
 import site.fitmon.common.dto.PageResponse;
 import site.fitmon.member.dto.request.MemberUpdateRequest;
 import site.fitmon.member.dto.response.MemberCalendarResponse;
+import site.fitmon.member.dto.response.MemberParticipantsResponse;
 import site.fitmon.member.dto.response.MemberResponse;
 
 @Tag(name = "회원 API", description = "회원 API")
@@ -28,6 +29,13 @@ public interface MemberSwaggerController {
 
     @Operation(summary = "캘린더 조회", description = "내가 참여한 / 모임장 인 모임을 모두 확인합니다.")
     ResponseEntity<PageResponse<MemberCalendarResponse>> getCalendarGatherings(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize
+    );
+
+    @Operation(summary = "내가 참여한 모임목록 조회", description = "내가 참여한 모임만을 조회합니다.")
+    ResponseEntity<PageResponse<MemberParticipantsResponse>> getParticipantsGathergins(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int pageSize

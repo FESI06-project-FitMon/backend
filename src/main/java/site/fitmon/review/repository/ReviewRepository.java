@@ -79,4 +79,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         @Param("searchDate") LocalDate searchDate,
         Pageable pageable
     );
+
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.gathering.id = :gatheringId")
+    Double findAverageRatingByGatheringId(@Param("gatheringId") Long gatheringId);
+
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.gathering.id = :gatheringId")
+    Long countReviewsByGatheringId(@Param("gatheringId") Long gatheringId);
 }

@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/guestbooks")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/my-page/gatherings/participants")
+                        .permitAll()
                         .anyRequest()
                         .authenticated())
             .sessionManagement(
