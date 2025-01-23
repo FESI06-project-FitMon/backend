@@ -1,5 +1,6 @@
 package site.fitmon.gathering.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,13 @@ public interface GatheringParticipantRepository extends JpaRepository<GatheringP
 
     @Query("SELECT gp FROM GatheringParticipant gp WHERE gp.member.id = :memberId")
     Page<GatheringParticipant> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+    @Query("SELECT gp FROM GatheringParticipant gp WHERE gp.member.id = :memberId AND gp.captainStatus = false")
+    Page<GatheringParticipant> findByMemberIdAndCaptainStatusFalse(@Param("memberId") Long memberId, Pageable pageable);
+
+    @Query("SELECT COUNT(gp) FROM GatheringParticipant gp WHERE gp.gathering.id = :gatheringId")
+    Long countByGatheringId(@Param("gatheringId") Long gatheringId);
+
+    @Query("SELECT gp FROM GatheringParticipant gp WHERE gp.gathering.id = :gatheringId ORDER BY gp.createdAt DESC")
+    List<GatheringParticipant> findByGatheringId(@Param("gatheringId") Long gatheringId);
 }
