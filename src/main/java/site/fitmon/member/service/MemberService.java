@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import site.fitmon.gathering.repository.GatheringRepository;
 import site.fitmon.member.domain.Member;
 import site.fitmon.member.dto.request.MemberUpdateRequest;
 import site.fitmon.member.dto.response.MemberCalendarResponse;
+import site.fitmon.member.dto.response.MemberCaptainGatheringResponse;
 import site.fitmon.member.dto.response.MemberParticipantsResponse;
 import site.fitmon.member.dto.response.MemberResponse;
 import site.fitmon.member.repository.MemberRepository;
@@ -103,7 +105,7 @@ public class MemberService {
                 Long participantCount = getParticipantCount(gathering);
                 List<ParticipantsResponse> participants = getRecentParticipants(gathering);
                 Double averageRating = getAvgRating(gathering);
-                Long guestBookCount = getGuestBookCount(gathering);
+                Long guestBookCount = getReviewCount(gathering);
 
                 return new MemberParticipantsResponse(
                     gathering.getId(),
@@ -139,6 +141,53 @@ public class MemberService {
         );
     }
 
+    public PageResponse<MemberCaptainGatheringResponse> getCaptainGatherings(String memberId, PageRequest pageable) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        Page<GatheringParticipant> captainGatherings = gatheringParticipantRepository.findByMemberIdAndCaptainStatusTrue(
+            member.getId(), pageable);
+
+        List<MemberCaptainGatheringResponse> responses = captainGatherings.getContent().stream()
+            .map(participant -> {
+                Gathering gathering = participant.getGathering();
+
+                Double averageRating = getAvgRating(gathering);
+                Long reviewCount = getReviewCount(gathering);
+
+                return new MemberCaptainGatheringResponse(
+                    gathering.getId(),
+                    participant.isCaptainStatus(),
+                    true,
+                    gathering.getTitle(),
+                    gathering.getDescription(),
+                    gathering.getMainType(),
+                    gathering.getSubType(),
+                    gathering.getImageUrl(),
+                    gathering.getStartDate(),
+                    gathering.getEndDate(),
+                    gathering.getMainLocation(),
+                    gathering.getSubLocation(),
+                    gathering.getMinCount(),
+                    gathering.getTotalCount(),
+                    gatheringParticipantRepository.countByGatheringId(gathering.getId()),
+                    gathering.getStatus(),
+                    gathering.getTagList(),
+                    getRecentParticipants(gathering),
+                    averageRating,
+                    reviewCount
+                );
+            })
+            .toList();
+
+        return new PageResponse<>(
+            responses,
+            captainGatherings.getNumber(),
+            captainGatherings.getTotalElements(),
+            captainGatherings.getTotalPages()
+        );
+    }
+
     private Long getParticipantCount(Gathering gathering) {
         return gatheringParticipantRepository.countByGatheringId(gathering.getId());
     }
@@ -154,7 +203,7 @@ public class MemberService {
         return reviewRepository.findAverageRatingByGatheringId(gathering.getId());
     }
 
-    private Long getGuestBookCount(Gathering gathering) {
+    private Long getReviewCount(Gathering gathering) {
         return reviewRepository.countReviewsByGatheringId(gathering.getId());
     }
 }
