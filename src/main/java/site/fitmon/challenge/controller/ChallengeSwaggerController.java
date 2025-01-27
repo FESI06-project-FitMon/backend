@@ -16,6 +16,7 @@ import site.fitmon.auth.domain.CustomUserDetails;
 import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
 import site.fitmon.challenge.dto.request.ChallengeEvidenceRequest;
 import site.fitmon.challenge.dto.request.ChallengeSearchCondition.ChallengeStatus;
+import site.fitmon.challenge.dto.response.ChallengeCreateResponse;
 import site.fitmon.challenge.dto.response.GatheringChallengesResponse;
 import site.fitmon.challenge.dto.response.PopularChallengeResponse;
 import site.fitmon.common.dto.ApiResponse;
@@ -36,7 +37,7 @@ public interface ChallengeSwaggerController {
             description = "잘못된 입력 값",
             content = {@Content()}
         )})
-    ResponseEntity<ApiResponse> createChallenge(
+    ResponseEntity<ChallengeCreateResponse> createChallenge(
         @Valid @RequestBody ChallengeCreateRequest request,
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal CustomUserDetails userDetails);
