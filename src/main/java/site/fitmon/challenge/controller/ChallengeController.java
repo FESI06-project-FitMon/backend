@@ -23,6 +23,7 @@ import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
 import site.fitmon.challenge.dto.request.ChallengeEvidenceRequest;
 import site.fitmon.challenge.dto.request.ChallengeSearchCondition;
 import site.fitmon.challenge.dto.request.ChallengeSearchCondition.ChallengeStatus;
+import site.fitmon.challenge.dto.response.ChallengeCreateResponse;
 import site.fitmon.challenge.dto.response.GatheringChallengesResponse;
 import site.fitmon.challenge.dto.response.PopularChallengeResponse;
 import site.fitmon.challenge.service.ChallengeService;
@@ -38,15 +39,14 @@ public class ChallengeController implements ChallengeSwaggerController {
     private final ChallengeService challengeService;
 
     @PostMapping("/gatherings/{gatheringId}/challenges")
-    public ResponseEntity<ApiResponse> createChallenge(
+    public ResponseEntity<ChallengeCreateResponse> createChallenge(
         @Valid @RequestBody ChallengeCreateRequest request,
         @PathVariable Long gatheringId,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        challengeService.createChallenge(request, gatheringId, userDetails.getUsername());
+        Long challenge = challengeService.createChallenge(request, gatheringId, userDetails.getUsername());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.of("챌린지 생성 성공"));
+        return ResponseEntity.ok(new ChallengeCreateResponse(challenge));
     }
 
     @PostMapping("/challenges/{challengeId}/verification")

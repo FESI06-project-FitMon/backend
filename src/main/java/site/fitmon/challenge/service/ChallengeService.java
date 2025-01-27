@@ -41,7 +41,7 @@ public class ChallengeService {
     private final ChallengeParticipantRepository challengeParticipantRepository;
 
     @Transactional
-    public void createChallenge(ChallengeCreateRequest request, Long gatheringId, String memberId) {
+    public Long createChallenge(ChallengeCreateRequest request, Long gatheringId, String memberId) {
         Member member = memberRepository.findById(Long.valueOf(memberId))
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
@@ -66,7 +66,8 @@ public class ChallengeService {
             .endDate(request.getEndDate())
             .build();
 
-        challengeRepository.save(challenge);
+        Challenge savedChallenge = challengeRepository.save(challenge);
+        return savedChallenge.getId();
     }
 
     @Transactional
