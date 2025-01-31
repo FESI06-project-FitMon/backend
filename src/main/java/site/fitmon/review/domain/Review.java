@@ -33,7 +33,7 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 600)
     private String content;
 
     @Column(nullable = false)

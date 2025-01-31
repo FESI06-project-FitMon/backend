@@ -3,7 +3,7 @@ package site.fitmon.review.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,7 +16,7 @@ public class ReviewCreateRequest {
     @Schema(description = "평점", example = "5")
     private Integer rating;
 
-    @NotBlank(message = "내용은 필수 입니다.")
+    @Size(max = 600, message = "600자 이하로 입력해주세요.")
     @Schema(description = "내용", example = "모임에 참석하고 3대 500 달성했어요!!")
     private String content;
 }
