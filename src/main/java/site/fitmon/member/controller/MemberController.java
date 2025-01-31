@@ -3,6 +3,7 @@ package site.fitmon.member.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,10 @@ import site.fitmon.common.dto.PageResponse;
 import site.fitmon.member.dto.request.MemberUpdateRequest;
 import site.fitmon.member.dto.response.MemberCalendarResponse;
 import site.fitmon.member.dto.response.MemberCaptainGatheringResponse;
+import site.fitmon.member.dto.response.MemberChallengeResponse;
 import site.fitmon.member.dto.response.MemberParticipantsResponse;
 import site.fitmon.member.dto.response.MemberResponse;
+import site.fitmon.member.dto.response.OwnedGatheringChallengeResponse;
 import site.fitmon.member.service.MemberService;
 
 @RestController
@@ -73,5 +76,32 @@ public class MemberController implements MemberSwaggerController {
     ) {
         PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Direction.DESC, "createdAt"));
         return ResponseEntity.ok(memberService.getCaptainGatherings(userDetails.getUsername(), pageable));
+    }
+
+    @GetMapping("/my-page/challenges")
+    public ResponseEntity<PageResponse<MemberChallengeResponse>> getMyChallenges(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "startDate"));
+
+        return ResponseEntity.ok(
+            memberService.getMemberChallenges(userDetails.getUsername(), pageable)
+        );
+    }
+
+    @GetMapping("/my-page/owned-gatherings/challenges")
+    public ResponseEntity<PageResponse<OwnedGatheringChallengeResponse>> getOwnedGatheringChallenges(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "startDate"));
+        PageResponse<OwnedGatheringChallengeResponse> response = memberService.getOwnedGatheringChallenges(
+            userDetails.getUsername(),
+            pageable
+        );
+        return ResponseEntity.ok(response);
     }
 }
