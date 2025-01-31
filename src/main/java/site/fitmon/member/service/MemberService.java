@@ -4,12 +4,13 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.fitmon.challenge.repository.ChallengeRepository;
 import site.fitmon.common.dto.PageResponse;
 import site.fitmon.common.exception.ApiException;
 import site.fitmon.common.exception.ErrorCode;
@@ -17,13 +18,14 @@ import site.fitmon.gathering.domain.Gathering;
 import site.fitmon.gathering.domain.GatheringParticipant;
 import site.fitmon.gathering.dto.response.ParticipantsResponse;
 import site.fitmon.gathering.repository.GatheringParticipantRepository;
-import site.fitmon.gathering.repository.GatheringRepository;
 import site.fitmon.member.domain.Member;
 import site.fitmon.member.dto.request.MemberUpdateRequest;
 import site.fitmon.member.dto.response.MemberCalendarResponse;
 import site.fitmon.member.dto.response.MemberCaptainGatheringResponse;
+import site.fitmon.member.dto.response.MemberChallengeResponse;
 import site.fitmon.member.dto.response.MemberParticipantsResponse;
 import site.fitmon.member.dto.response.MemberResponse;
+import site.fitmon.member.dto.response.OwnedGatheringChallengeResponse;
 import site.fitmon.member.repository.MemberRepository;
 import site.fitmon.review.repository.ReviewRepository;
 
@@ -35,7 +37,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final GatheringParticipantRepository gatheringParticipantRepository;
     private final ReviewRepository reviewRepository;
-    private final GatheringRepository gatheringRepository;
+    private final ChallengeRepository challengeRepository;
 
     public MemberResponse getMemberInfo(String memberId) {
         Member member = memberRepository.findById(Long.valueOf(memberId))
@@ -186,6 +188,32 @@ public class MemberService {
             captainGatherings.getTotalElements(),
             captainGatherings.getTotalPages()
         );
+    }
+
+    public PageResponse<MemberChallengeResponse> getMemberChallenges(String memberId, Pageable pageable) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Page<MemberChallengeResponse> memberChallenges = challengeRepository.getMemberChallenges(member.getId(),
+            pageable);
+        return new PageResponse<>(
+            memberChallenges.getContent(),
+            memberChallenges.getNumber(),
+            memberChallenges.getTotalElements(),
+            memberChallenges.getTotalPages()
+        );
+    }
+
+    public PageResponse<OwnedGatheringChallengeResponse> getOwnedGatheringChallenges(String memberId,
+        Pageable pageable) {
+        Member member = memberRepository.findById(Long.valueOf(memberId))
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Page<OwnedGatheringChallengeResponse> ownedGatheringChallenges = challengeRepository.getOwnedGatheringChallenges(
+            member.getId(), pageable);
+        return new PageResponse<>(
+            ownedGatheringChallenges.getContent(),
+            ownedGatheringChallenges.getNumber(),
+            ownedGatheringChallenges.getTotalElements(),
+            ownedGatheringChallenges.getTotalPages());
     }
 
     private Long getParticipantCount(Gathering gathering) {
