@@ -11,7 +11,7 @@ import site.fitmon.review.domain.Review;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MyReviewResponse {
 
-    private Long reviewId;
+    private Long guestbookId;
     private Long gatheringId;
     private String content;
     private Integer rating;
@@ -28,9 +28,9 @@ public class MyReviewResponse {
     }
 
     @Builder
-    private MyReviewResponse(Long reviewId, Long gatheringId,
+    private MyReviewResponse(Long guestbookId, Long gatheringId,
         String content, Integer rating, LocalDateTime createdAt) {
-        this.reviewId = reviewId;
+        this.guestbookId = guestbookId;
         this.gatheringId = gatheringId;
         this.content = content;
         this.rating = rating;
