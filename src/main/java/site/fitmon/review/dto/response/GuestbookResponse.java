@@ -13,11 +13,13 @@ import site.fitmon.gathering.domain.SubType;
 @NoArgsConstructor
 public class GuestbookResponse {
 
+    private Long guestbookId;
     private int guestbookScore;
     private String guestBookContent;
     private MainType mainType;
     private SubType subType;
     private String gatheringTitle;
+    private String gatheringImageUrl;
     private String mainLocation;
     private String subLocation;
     private String nickName;

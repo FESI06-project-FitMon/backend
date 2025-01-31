@@ -50,11 +50,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     );
 
     @Query("SELECT new site.fitmon.review.dto.response.GuestbookResponse(" +
+        "r.id, " +
         "r.rating, " +
         "r.content, " +
         "g.mainType, " +
         "g.subType, " +
         "g.title, " +
+        "g.imageUrl, " +
         "g.mainLocation, " +
         "g.subLocation, " +
         "m.nickName, " +
