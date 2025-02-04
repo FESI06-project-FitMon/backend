@@ -53,6 +53,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         "r.id, " +
         "r.rating, " +
         "r.content, " +
+        "g.id, " +
         "g.mainType, " +
         "g.subType, " +
         "g.title, " +
