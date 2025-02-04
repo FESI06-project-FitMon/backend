@@ -16,6 +16,7 @@ public class GuestbookResponse {
     private Long guestbookId;
     private int guestbookScore;
     private String guestBookContent;
+    private Long gatheringId;
     private MainType mainType;
     private SubType subType;
     private String gatheringTitle;
