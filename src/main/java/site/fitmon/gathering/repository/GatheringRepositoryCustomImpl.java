@@ -77,7 +77,8 @@ public class GatheringRepositoryCustomImpl implements GatheringRepositoryCustom 
                 mainLocationEq(condition.getMainLocation()),
                 subLocationEq(condition.getSubLocation()),
                 dateInclude(condition.getSearchDate()),
-                gathering.deleted.eq(false)
+                gathering.deleted.eq(false),
+                gathering.status.ne(GatheringStatus.취소됨)
             );
 
         OrderSpecifier<?>[] orderSpecifiers = createOrderSpecifiers(condition.getSortBy(),
