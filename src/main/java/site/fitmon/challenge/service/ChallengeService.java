@@ -157,4 +157,9 @@ public class ChallengeService {
         challengeParticipantRepository.deleteByChallenge(challenge);
         challengeEvidenceRepository.deleteByChallenge(challenge);
     }
+
+    public List<GatheringChallengesResponse> getAllGatheringChallenges(Long gatheringId, String memberId) {
+        Long memberIdLong = (memberId != null) ? Long.valueOf(memberId) : null;
+        return challengeRepository.getAllGatheringChallenges(gatheringId, memberIdLong);
+    }
 }

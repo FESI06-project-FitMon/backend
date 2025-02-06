@@ -107,4 +107,10 @@ public interface ChallengeSwaggerController {
         @PathVariable Long challengeId,
         @AuthenticationPrincipal CustomUserDetails userDetails
     );
+
+    @Operation(summary = "특정 모임의 챌린지 전체 조회", description = "특정 모임의 챌린지 목록을 전체 조회 합니다.")
+    ResponseEntity<List<GatheringChallengesResponse>> getAllGatheringChallenges(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    );
 }

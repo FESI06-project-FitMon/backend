@@ -1,5 +1,6 @@
 package site.fitmon.challenge.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -20,4 +21,6 @@ public interface ChallengeRepositoryCustom {
     Page<MemberChallengeResponse> getMemberChallenges(Long memberId, Pageable pageable);
 
     Page<OwnedGatheringChallengeResponse> getOwnedGatheringChallenges(Long memberId, Pageable pageable);
+
+    List<GatheringChallengesResponse> getAllGatheringChallenges(Long gatheringId, Long memberId);
 }
