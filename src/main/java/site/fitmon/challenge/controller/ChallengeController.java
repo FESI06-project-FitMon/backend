@@ -98,4 +98,14 @@ public class ChallengeController implements ChallengeSwaggerController {
         challengeService.deleteChallenge(challengeId, userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.of("챌린지 삭제 완료"));
     }
+
+    @GetMapping("/gatherings/{gatheringId}/challenges/all")
+    public ResponseEntity<List<GatheringChallengesResponse>> getAllGatheringChallenges(
+        @PathVariable Long gatheringId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        List<GatheringChallengesResponse> challenges = challengeService.getAllGatheringChallenges(gatheringId, email);
+        return ResponseEntity.ok(challenges);
+    }
 }

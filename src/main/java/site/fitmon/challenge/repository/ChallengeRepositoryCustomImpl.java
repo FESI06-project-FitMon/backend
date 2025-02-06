@@ -253,6 +253,70 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public List<GatheringChallengesResponse> getAllGatheringChallenges(Long gatheringId, Long memberId) {
+        QChallenge challenge = QChallenge.challenge;
+        QChallengeParticipant participant = QChallengeParticipant.challengeParticipant;
+        QChallengeEvidence evidence = QChallengeEvidence.challengeEvidence;
+        List<GatheringChallengesResponse> content = queryFactory
+            .select(Projections.constructor(GatheringChallengesResponse.class,
+                challenge.gathering.id,
+                challenge.id,
+                challenge.title,
+                challenge.description,
+                challenge.imageUrl,
+                ExpressionUtils.as(
+                    JPAExpressions
+                        .select(participant.count())
+                        .from(participant)
+                        .where(participant.challenge.id.eq(challenge.id)),
+                    "participantCount"
+                ),
+                ExpressionUtils.as(
+                    JPAExpressions
+                        .select(evidence.member.countDistinct())
+                        .from(evidence)
+                        .where(evidence.challenge.id.eq(challenge.id)),
+                    "successParticipantCount"
+                ),
+                ExpressionUtils.as(
+                    memberId != null ?
+                        JPAExpressions
+                            .select(participant.count().gt(0))
+                            .from(participant)
+                            .where(
+                                participant.challenge.id.eq(challenge.id),
+                                participant.member.id.eq(memberId)
+                            )
+                        : Expressions.constant(false),
+                    "participantStatus"
+                ),
+                ExpressionUtils.as(
+                    memberId != null ?
+                        JPAExpressions
+                            .select(evidence.count().gt(0))
+                            .from(evidence)
+                            .where(
+                                evidence.challenge.id.eq(challenge.id),
+                                evidence.member.id.eq(memberId)
+                            )
+                        : Expressions.constant(false),
+                    "verificationStatus"
+                ),
+                challenge.startDate,
+                challenge.endDate
+            ))
+            .from(challenge)
+            .where(
+                challenge.gathering.id.eq(gatheringId),
+                challenge.deleted.eq(false)
+            )
+            .orderBy(challenge.id.desc())
+            .fetch();
+
+        return content;
+    }
+
     private BooleanExpression challengeStatusEq(ChallengeStatus status) {
         if (status == null) {
             return null;
