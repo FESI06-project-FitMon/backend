@@ -11,7 +11,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.fitmon.challenge.domain.Challenge;
+import site.fitmon.challenge.domain.ChallengeEvidence;
+import site.fitmon.challenge.domain.ChallengeParticipant;
 import site.fitmon.challenge.dto.request.ChallengeCreateRequest;
+import site.fitmon.challenge.repository.ChallengeEvidenceRepository;
+import site.fitmon.challenge.repository.ChallengeParticipantRepository;
 import site.fitmon.challenge.repository.ChallengeRepository;
 import site.fitmon.common.dto.SliceResponse;
 import site.fitmon.common.exception.ApiException;
@@ -38,6 +42,8 @@ public class GatheringService {
     private final GatheringRepository gatheringRepository;
     private final GatheringParticipantRepository gatheringParticipantRepository;
     private final ChallengeRepository challengeRepository;
+    private final ChallengeParticipantRepository challengeParticipantRepository;
+    private final ChallengeEvidenceRepository challengeEvidenceRepository;
     private final GatheringStatusService gatheringStatusService;
 
     @Transactional
@@ -235,5 +241,17 @@ public class GatheringService {
             throw new ApiException(ErrorCode.GATHERING_CAPTAIN);
         }
         gatheringParticipantRepository.delete(participant);
+
+        List<ChallengeParticipant> challengeParticipants = challengeParticipantRepository.findByMemberAndChallenge_Gathering(
+            member, gathering);
+        if (!challengeParticipants.isEmpty()) {
+            challengeParticipantRepository.deleteAll(challengeParticipants);
+        }
+
+        List<ChallengeEvidence> challengeEvidences = challengeEvidenceRepository.findByMemberAndChallenge_Gathering(
+            member, gathering);
+        if (!challengeEvidences.isEmpty()) {
+            challengeEvidenceRepository.deleteAll(challengeEvidences);
+        }
     }
 }

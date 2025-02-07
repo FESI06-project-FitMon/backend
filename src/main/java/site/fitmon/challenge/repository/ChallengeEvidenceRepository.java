@@ -1,5 +1,6 @@
 package site.fitmon.challenge.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,6 @@ public interface ChallengeEvidenceRepository extends JpaRepository<ChallengeEvid
     @Modifying
     @Query("DELETE FROM ChallengeEvidence ce WHERE ce.challenge = :challenge")
     void deleteByChallenge(@Param("challenge") Challenge challenge);
+
+    List<ChallengeEvidence> findByMemberAndChallenge_Gathering(Member member, Gathering gathering);
 }

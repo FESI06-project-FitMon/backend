@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -149,7 +148,7 @@ public interface GatheringsSwaggerController {
         @RequestParam int pageSize
     );
 
-        @Operation(summary = "모임 참여 취소")
+    @Operation(summary = "모임 참여 취소")
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
@@ -161,7 +160,6 @@ public interface GatheringsSwaggerController {
             description = "잘못된 입력 값",
             content = {@Content()}
         )})
-    @DeleteMapping("/{gatheringId}/cancel")
     ResponseEntity<ApiResponse> cancelParticipantGathering(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long gatheringId
