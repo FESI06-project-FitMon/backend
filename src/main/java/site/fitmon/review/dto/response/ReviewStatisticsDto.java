@@ -12,4 +12,5 @@ public class ReviewStatisticsDto {
 
     private double averageRating;
     private Map<String, Long> ratingCounts;
+    private long totalCounts;
 }
