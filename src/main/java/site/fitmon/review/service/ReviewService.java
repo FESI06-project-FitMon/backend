@@ -204,7 +204,7 @@ public class ReviewService {
             .sum();
         double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0.0;
 
-        return new ReviewStatisticsDto(averageRating, ratingCounts);
+        return new ReviewStatisticsDto(averageRating, ratingCounts, totalReviews);
     }
 
     public SliceResponse<GuestbookResponse> getGuestbookEntries(
