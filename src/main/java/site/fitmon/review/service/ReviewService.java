@@ -120,15 +120,11 @@ public class ReviewService {
         }
 
         boolean canWriteReview = gathering.getStatus() == GatheringStatus.종료됨 ||
-            hasAnyChallengeEvidence(gathering, member);
+            gathering.getStatus() == GatheringStatus.진행중;
 
         if (!canWriteReview) {
             throw new ApiException(ErrorCode.INVALID_REVIEW_CONDITION);
         }
-    }
-
-    private boolean hasAnyChallengeEvidence(Gathering gathering, Member member) {
-        return challengeEvidenceRepository.hasEvidenceInGathering(member, gathering);
     }
 
     public SliceResponse<GatheringReviewsResponse> getGatheringReviews(Long gatheringId, String memberId,
