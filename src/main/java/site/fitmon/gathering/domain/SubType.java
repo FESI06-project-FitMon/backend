@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum SubType {
     런닝("RUNNING", MainType.유산소형),
     자전거("CYCLING", MainType.유산소형),
+    수영("SWIMMING", MainType.유산소형),
     유산소_기타("AEROBIC_ETC", MainType.유산소형),
 
     헬스("WEIGHT_TRAINING", MainType.헬스형),
